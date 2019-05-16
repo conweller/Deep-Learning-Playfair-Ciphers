@@ -12,7 +12,8 @@ SUBSET_SZ = 100
 # INPUT_CHARS: List of alphabetical characters in the input file
 INPUT_CHARS = ""
 
-# PLAIN_TEXT: List of strings containing <SUBSET_SZ> characters from INPUT_CHARS
+# PLAIN_TEXT: List of strings containing <SUBSET_SZ> characters from
+#   INPUT_CHARS
 PLAIN_TEXT = []
 
 with open(DATA_FILE) as inf:

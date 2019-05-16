@@ -3,6 +3,8 @@ from string import ascii_lowercase
 from cipher import encipher_text, generate_key
 
 DATA_FILE = '../data/melville-moby_dick.txt'
+
+# Size of each chunk of training data, must be even
 SUBSET_SZ = 100
 
 # ============ Generate training data from text file ===============

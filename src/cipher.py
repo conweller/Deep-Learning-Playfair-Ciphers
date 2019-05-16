@@ -16,7 +16,7 @@ def generate_key():
     return arr
 
 
-def generate_cipher_text(key, plain_text):
+def encipher_text(key, plain_text):
     """
     Generates the cipher text for given key and plain_text
 
@@ -26,5 +26,39 @@ def generate_cipher_text(key, plain_text):
     Returns:
         String of the ciphered plain_text using the inputted key
     """
-    # TODO: actually cipher the text
-    return plain_text
+    cipher_text = ""
+    for i in range(0, len(plain_text), 2):
+        # get current char pair, change j's to i's
+        ch1 = plain_text[i] if plain_text[i] != 'j' else 'i'
+        ch2 = plain_text[i+1] if plain_text[i+1] != 'j' else 'i'
+
+        # 1. If both letters are the same, make second 'x' and continue
+        if ch1 == ch2:
+            ch2 = 'x'
+        idx1 = key.index(ch1)
+        idx2 = key.index(ch2)
+
+        # 2. If letters are on same row replace each with letter to the right
+        #   on row, wrapping around the left side if necessary
+        if idx1 // 5 == idx2 // 5:
+            for idx in (idx1, idx2):
+                cipher_text += key[idx // 5 * 5 + ((idx + 1) % 5)]
+
+        # 3. Else if letters are in the same column replace with the letters
+        #   below wrapping to top if necessary
+        elif idx1 % 5 == idx2 % 5:
+            for idx in (idx1, idx2):
+                cipher_text += key[idx % 5 + 5 * (((idx // 5) + 1) % 5)]
+
+        # 4. If letters are not in the same row or column, replace each using
+        #   the rectangle defined by their positions, replace each letter using
+        #   with the letter in the same row but the opposite corner to that
+        #   letter
+        else:
+            cipher_text += key[
+                idx1 % 5 + (idx2 % 5 - idx1 % 5) + (idx1 // 5 * 5)
+            ]
+            cipher_text += key[
+                idx2 % 5 + (idx1 % 5 - idx2 % 5) + (idx2 // 5 * 5)
+            ]
+    return cipher_text

@@ -1,8 +1,8 @@
 """Contains builds system"""
 from string import ascii_lowercase
-from cipher import generate_cipher_text, generate_key
+from cipher import encipher_text, generate_key
 
-DATA_FILE = "../data/melville-moby_dick.txt"
+DATA_FILE = '../data/melville-moby_dick.txt'
 SUBSET_SZ = 100
 
 # ============ Generate training data from text file ===============
@@ -30,4 +30,4 @@ TRAINING = []
 
 for text in PLAIN_TEXT:
     key = generate_key()
-    TRAINING.append((text, generate_cipher_text(key, text), key))
+    TRAINING.append((text, encipher_text(key, text), key))

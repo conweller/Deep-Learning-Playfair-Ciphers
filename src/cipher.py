@@ -22,9 +22,9 @@ def encipher_text(key, plain_text):
 
     Arguments:
         key: 5 x 5 array of unique letters not including 'j'
-        plain_text: String of characters to be ciphered
+        plain_text: String of characters to be enciphered
     Returns:
-        String of the ciphered plain_text using the inputted key
+        String of the enciphered plain_text using the inputted key
     """
     cipher_text = ""
     for i in range(0, len(plain_text), 2):

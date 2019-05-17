@@ -1,6 +1,6 @@
 """Contains builds system"""
 from string import ascii_lowercase
-from cipher import encipher_text, generate_key
+from cipher import encipher_text, decipher_text, generate_key
 
 DATA_FILE = '../data/melville-moby_dick.txt'
 
@@ -27,10 +27,11 @@ for idx in range(0, len(INPUT_CHARS), SUBSET_SZ):
     PLAIN_TEXT.append((INPUT_CHARS[idx:idx + SUBSET_SZ]))
 del PLAIN_TEXT[-1]
 
-# TRAINING: list of size SUBSET_SZ of tuples of plain text, cipher text, and
-#   cipher keys in that order
+# TRAINING: list of size SUBSET_SZ of tuples of deciphered text, enciphered
+# text, and cipher keys in that order
 TRAINING = []
 
 for text in PLAIN_TEXT:
     key = generate_key()
-    TRAINING.append((text, encipher_text(key, text), key))
+    cipher_text = encipher_text(key, text)
+    TRAINING.append((decipher_text(key, cipher_text), cipher_text, key))

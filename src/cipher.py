@@ -18,7 +18,7 @@ def generate_key():
 
 def encipher_text(key, plain_text):
     """
-    Generates the cipher text for given key and plain_text
+    Generates the enciphered text for given key and plain text
 
     Arguments:
         key: 5 x 5 array of unique letters not including 'j'
@@ -62,3 +62,49 @@ def encipher_text(key, plain_text):
                 idx2 % 5 + (idx1 % 5 - idx2 % 5) + (idx2 // 5 * 5)
             ]
     return cipher_text
+
+
+def decipher_text(key, cipher_text):
+    """
+    Generates the deciphered text for given key and enciphered text
+
+    Arguments:
+        key: 5 x 5 array of unique letters not including 'j', that was used to
+            encipher the given cipher text
+        cipher_text: String of characters to be deciphered
+    Returns:
+        String of the deciphered cipher_text using the inputted key
+    """
+    deciphered_text = ""
+    for i in range(0, len(cipher_text), 2):
+        # get current char pair
+        ch1 = cipher_text[i] if cipher_text[i] != 'j' else 'i'
+        ch2 = cipher_text[i+1] if cipher_text[i+1] != 'j' else 'i'
+
+        idx1 = key.index(ch1)
+        idx2 = key.index(ch2)
+
+        # 2. If letters are on same row replace each with letter to the left
+        #   on row, wrapping around the right side if necessary
+        if idx1 // 5 == idx2 // 5:
+            for idx in (idx1, idx2):
+                deciphered_text += key[idx // 5 * 5 + ((idx - 1) % 5)]
+
+        # 3. Else if letters are in the same column replace with the letters
+        #   above wrapping to bottom if necessary
+        elif idx1 % 5 == idx2 % 5:
+            for idx in (idx1, idx2):
+                deciphered_text += key[idx % 5 + 5 * (((idx // 5) - 1) % 5)]
+
+        # 4. If letters are not in the same row or column, replace each using
+        #   the rectangle defined by their positions, replace each letter using
+        #   with the letter in the same row but the opposite corner to that
+        #   letter
+        else:
+            deciphered_text += key[
+                idx1 % 5 + (idx2 % 5 - idx1 % 5) + (idx1 // 5 * 5)
+            ]
+            deciphered_text += key[
+                idx2 % 5 + (idx1 % 5 - idx2 % 5) + (idx2 // 5 * 5)
+            ]
+    return deciphered_text

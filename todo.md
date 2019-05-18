@@ -17,3 +17,7 @@
     * Place in Square:
         * Place unused letters in pair in some availible spaces
 * If actions fail give negative reward
+## Neural Net architecture
+* Each input node is one 4 letter tuple (2 plaintext, 2 ciphertext)
+  * If there are 100 chars in the input text, then their should be 50 inpute nodes 
+* Outputs a key

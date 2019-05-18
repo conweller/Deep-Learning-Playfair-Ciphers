@@ -1,37 +1,29 @@
-"""Contains builds system"""
-from string import ascii_lowercase
-from cipher import encipher_text, decipher_text, generate_key
+"""Contains code to build the learning system"""
+import pickle
+import training_data as td
 
+
+# =========================== READ IN TRAING DATA =============================
+# Default datafile
 DATA_FILE = '../data/melville-moby_dick.txt'
 
 # Size of each chunk of training data, must be even
 SUBSET_SZ = 100
 
-# ============ Generate training data from text file ===============
-
-# INPUT_CHARS: List of alphabetical characters in the input file
-INPUT_CHARS = ""
-
-# PLAIN_TEXT: List of strings containing <SUBSET_SZ> characters from
-#   INPUT_CHARS
-PLAIN_TEXT = []
-
-with open(DATA_FILE) as inf:
-    for line in inf:
-        for char in line:
-            char = char.lower()
-            if char in ascii_lowercase:
-                INPUT_CHARS += char
-
-for idx in range(0, len(INPUT_CHARS), SUBSET_SZ):
-    PLAIN_TEXT.append((INPUT_CHARS[idx:idx + SUBSET_SZ]))
-del PLAIN_TEXT[-1]
-
 # TRAINING: list of size SUBSET_SZ of tuples of deciphered text, enciphered
 #   text, and cipher keys in that order
 TRAINING = []
 
-for text in PLAIN_TEXT:
-    key = generate_key()
-    cipher_text = encipher_text(key, text)
-    TRAINING.append((decipher_text(key, cipher_text), cipher_text, key))
+# SERIALIZE_NAME: serialized training data
+SERIALIZE_NAME = 'training.pickle'
+
+# If serialized file exists, use that, otherwise read in the training data
+#   from the DATA_FILE and serialize the result
+try:
+    with open(SERIALIZE_NAME, 'rb') as inf:
+        TRAINING = pickle.load(inf)
+except IOError:
+    TRAINING = td.generate_data(DATA_FILE, SUBSET_SZ)
+    with open(SERIALIZE_NAME, 'wb') as outf:
+        pickle.dump(TRAINING, outf)
+        outf.close()

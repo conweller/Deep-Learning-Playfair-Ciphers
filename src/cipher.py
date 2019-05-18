@@ -108,3 +108,8 @@ def decipher_text(key, cipher_text):
                 idx2 % 5 + (idx1 % 5 - idx2 % 5) + (idx2 // 5 * 5)
             ]
     return deciphered_text
+   
+
+def key_to_string(key):
+    for idx in range(0, 25, 5):
+        print(key[idx:idx + 5])

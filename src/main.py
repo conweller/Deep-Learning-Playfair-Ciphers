@@ -28,7 +28,7 @@ for idx in range(0, len(INPUT_CHARS), SUBSET_SZ):
 del PLAIN_TEXT[-1]
 
 # TRAINING: list of size SUBSET_SZ of tuples of deciphered text, enciphered
-# text, and cipher keys in that order
+#   text, and cipher keys in that order
 TRAINING = []
 
 for text in PLAIN_TEXT:

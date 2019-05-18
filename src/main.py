@@ -3,7 +3,7 @@ import pickle
 import training_data as td
 
 
-# =========================== READ IN TRAING DATA =============================
+# =========================== READ IN TRAING DATA ============================
 # Default datafile
 DATA_FILE = '../data/melville-moby_dick.txt'
 

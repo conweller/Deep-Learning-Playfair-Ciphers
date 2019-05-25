@@ -18,12 +18,13 @@ class KeyState:
     ACT_COL = [0, 1, 0]
     ACT_SQR = [1, 0, 0]
 
-    def __init__(self, decp_txt, encp_txt):
+    def __init__(self, decp_txt, encp_txt, key):
         self.available = list(range(0, 25))
         self.used = {}
         self.decp_txt = decp_txt
         self.encp_txt = encp_txt
         self.loc = 0
+        self.key = key  # Do we need to pass in the key here, I just added this -- chris
 
     def add_char(self, char, idx):
         """
@@ -49,7 +50,7 @@ class KeyState:
         Makes a column action
 
         Returns:
-            Reward for the given action
+            Reward for the action
         """
         print("column")
 
@@ -78,3 +79,34 @@ class KeyState:
             str(KeyState.ACT_SQR): KeyState.action_square
         }
         return action[str(act_vec)](self)
+    
+    # HYPERPAREMET SECTION
+
+    # MODEL
+    state_size = [50, 50]       # 50 plaintext pairs and 50 ciphertext pairs 
+    action_size = 3             # There is three actions (currently) column, row, and square add
+    learning_rate = .002        # Alpha
+    
+    # TRAINING
+    total_episodes = 1000       # I just picked a big number, I dont know how many we want to do
+
+    # EXPLORATION
+    explore_start = 1.0         # alright all these variable names are kind of self explanatory
+    explore_stop = 0.01
+    decay_right = 0.0001
+
+    # Q Learning hyper parameters
+    gamma = 0.95
+
+    # Memory HyperParemeters
+    memory_size = 1000000
+
+    # Training?
+    training = True
+
+
+
+    
+
+
+

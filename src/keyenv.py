@@ -9,7 +9,8 @@ class KeyState:
         used: dictionary of used characters and the key indexes they occupy
         decp_txt: deciphered text
         encp_txt: enciphered text
-        loc: location in the enciphered and deciphered strings we are
+        key: key used to encipher the deciphered text
+        txt_idx: location in the enciphered and deciphered strings we are
             currently
     """
 
@@ -23,8 +24,8 @@ class KeyState:
         self.used = {}
         self.decp_txt = decp_txt
         self.encp_txt = encp_txt
-        self.loc = 0
-        self.key = key  # Do we need to pass in the key here, I just added this -- chris
+        self.key = key
+        self.txt_idx = 0
 
     def add_char(self, char, idx):
         """
@@ -35,6 +36,15 @@ class KeyState:
         """
         self.available.remove(idx)
         self.used[char] = idx
+
+    def check_used(self):
+        """
+        Returns the number of the current set of 4 encp_txt and decp_txt
+            characters that already in the key being built
+        """
+        cur_text = self.decp_txt[self.txt_idx:self.txt_idx + 4]
+        cur_text += self.encp_txt[self.txt_idx:self.txt_idx + 4]
+        return set(self.used.keys()).intersection(list(cur_text))
 
     def action_row(self):
         """
@@ -79,19 +89,22 @@ class KeyState:
             str(KeyState.ACT_SQR): KeyState.action_square
         }
         return action[str(act_vec)](self)
-    
+
     # HYPERPAREMET SECTION
 
     # MODEL
-    state_size = [50, 50]       # 50 plaintext pairs and 50 ciphertext pairs 
-    action_size = 3             # There is three actions (currently) column, row, and square add
+    state_size = [50, 50]       # 50 plaintext pairs and 50 ciphertext pairs
+    # There is three actions (currently) column, row, and square add
+    action_size = 3
     learning_rate = .002        # Alpha
-    
+
     # TRAINING
-    total_episodes = 1000       # I just picked a big number, I dont know how many we want to do
+    # I just picked a big number, I dont know how many we want to do
+    total_episodes = 1000
 
     # EXPLORATION
-    explore_start = 1.0         # alright all these variable names are kind of self explanatory
+    # alright all these variable names are kind of self explanatory
+    explore_start = 1.0
     explore_stop = 0.01
     decay_right = 0.0001
 
@@ -103,10 +116,3 @@ class KeyState:
 
     # Training?
     training = True
-
-
-
-    
-
-
-

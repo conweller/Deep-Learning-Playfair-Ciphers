@@ -1,4 +1,5 @@
 """Contain KeyState Class"""
+import cipher
 GOOD_SQR_REWARD = 10
 
 
@@ -46,6 +47,17 @@ class KeyState:
         self.avbl_col[idx % 5] -= 1
         self.used[char] = idx
 
+    def get_key(self):
+        """
+        Returns used dictionary as a list representation of a key, with the
+            character ' ' denoting an unused spot in the key
+        """
+        key_arr = [' ']*25
+        for char in self.used.keys():
+            key_arr[self.used[char]] = char
+        cipher.print_key(key_arr)
+        # return key_arr
+
     def check_avbl(self):
         """
         Returns the number of the current set of 4 encp_txt and decp_txt
@@ -73,6 +85,8 @@ class KeyState:
         """
         print("column")
 
+# The following function is kind of ridiculous, but it works and would've been
+#   difficult to implement in a different manner
     def action_square(self):
         """
         Makes a square action
@@ -83,8 +97,10 @@ class KeyState:
         avbl_chars = self.check_avbl()
         d1 = self.decp_txt[self.txt_idx]
         d2 = self.decp_txt[self.txt_idx+1]
-        e1 = self.decp_txt[self.txt_idx]
-        e2 = self.decp_txt[self.txt_idx+1]
+        e1 = self.encp_txt[self.txt_idx]
+        e2 = self.encp_txt[self.txt_idx+1]
+        print(d1)
+        print(d2)
         if not avbl_chars:
             print("all chars used")
             return -12242134
@@ -112,7 +128,136 @@ class KeyState:
                                 self.add_char(e1, (max_row1*5) + max_col2)
                                 self.add_char(d2, (max_row2*5) + max_col2)
                                 self.add_char(e2, (max_row2*5) + max_col1)
+                                self.txt_idx += 2
                                 return GOOD_SQR_REWARD
+        if len(avbl_chars) == 3:
+            if e1 not in avbl_chars:
+                row_used = self.used[e1] // 5
+                col_used = self.used[e1] % 5
+                if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
+                    return
+                max_row1 = row_used
+                max_col2 = col_used
+                for i in range(len(rows)-1):
+                    max_row2 = rows[-1-i][0]
+                    if max_row2 != max_row1:
+                        for k in range(len(cols)-1):
+                            max_col1 = cols[-1-k][0]
+                            if max_col2 != max_col1:
+                                we_good = (max_row1 * 5) + max_col1 in self.avbl
+                                # we_good &= (max_row1 * 5) + max_col2 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col1 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                                if we_good:
+                                    self.add_char(d1, (max_row1*5) + max_col1)
+                                    # self.add_char(e1, (max_row1*5) + max_col2)
+                                    self.add_char(d2, (max_row2*5) + max_col2)
+                                    self.add_char(e2, (max_row2*5) + max_col1)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+            if e2 not in avbl_chars:
+                row_used = self.used[e2] // 5
+                col_used = self.used[e2] % 5
+                if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
+                    return
+                max_row2 = row_used
+                max_col1 = col_used
+                for i in range(len(rows)-1):
+                    max_row1 = rows[-1-i][0]
+                    if max_row2 != max_row1:
+                        for k in range(len(cols)-1):
+                            max_col2 = cols[-1-k][0]
+                            if max_col2 != max_col1:
+                                we_good = (max_row1 * 5) + max_col1 in self.avbl
+                                we_good &= (max_row1 * 5) + max_col2 in self.avbl
+                                # we_good &= (max_row2 * 5) + max_col1 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                                if we_good:
+                                    self.add_char(d1, (max_row1*5) + max_col1)
+                                    self.add_char(e1, (max_row1*5) + max_col2)
+                                    self.add_char(d2, (max_row2*5) + max_col2)
+                                    # self.add_char(e2, (max_row2*5) + max_col1)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+            if d1 not in avbl_chars:
+                row_used = self.used[d1] // 5
+                col_used = self.used[d1] % 5
+                if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
+                    return
+                max_row1 = row_used
+                max_col1 = col_used
+                for i in range(len(rows)-1):
+                    max_row2 = rows[-1-i][0]
+                    if max_row2 != max_row1:
+                        for k in range(len(cols)-1):
+                            max_col2 = cols[-1-k][0]
+                            if max_col2 != max_col1:
+                                # we_good = (max_row1 * 5) + max_col1 in self.avbl
+                                we_good = (max_row1 * 5) + max_col2 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col1 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                                if we_good:
+                                    # self.add_char(d1, (max_row1*5) + max_col1)
+                                    self.add_char(e1, (max_row1*5) + max_col2)
+                                    self.add_char(d2, (max_row2*5) + max_col2)
+                                    self.add_char(e2, (max_row2*5) + max_col1)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+            if d2 not in avbl_chars:
+                row_used = self.used[d2] // 5
+                col_used = self.used[d2] % 5
+                if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
+                    return
+                max_row2 = row_used
+                max_col2 = col_used
+                for i in range(len(rows)-1):
+                    max_row1 = rows[-1-i][0]
+                    if max_row2 != max_row1:
+                        for k in range(len(cols)-1):
+                            max_col1 = cols[-1-k][0]
+                            if max_col2 != max_col1:
+                                we_good = (max_row1 * 5) + max_col1 in self.avbl
+                                we_good &= (max_row1 * 5) + max_col2 in self.avbl
+                                we_good &= (max_row2 * 5) + max_col1 in self.avbl
+                                # we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                                if we_good:
+                                    self.add_char(d1, (max_row1*5) + max_col1)
+                                    self.add_char(e1, (max_row1*5) + max_col2)
+                                    # self.add_char(d2, (max_row2*5) + max_col2)
+                                    self.add_char(e2, (max_row2*5) + max_col1)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+        if len(avbl_chars) == 2:
+            if e1 not in avbl_chars and e2 not in avbl_chars:
+                row_used1 = self.used[e1] // 5
+                col_used1 = self.used[e1] % 5
+                row_used2 = self.used[e2] // 5
+                col_used2 = self.used[e2] % 5
+                if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
+                    return
+                if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
+                    return
+                if col_used1 == col_used2:
+                    return
+                if row_used1 == row_used2:
+                    return
+                max_row1 = row_used1
+                max_col2 = col_used1
+                max_row2 = row_used2
+                max_col1 = col_used2
+                we_good = (max_row1 * 5) + max_col1 in self.avbl
+                # we_good &= (max_row1 * 5) + max_col2 in self.avbl
+                # we_good &= (max_row2 * 5) + max_col1 in self.avbl
+                we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                if we_good:
+                    self.add_char(d1, (max_row1*5) + max_col1)
+                    # self.add_char(e1, (max_row1*5) + max_col2)
+                    self.add_char(d2, (max_row2*5) + max_col2)
+                    # self.add_char(e2, (max_row2*5) + max_col1)
+                    self.txt_idx += 2
+                    return GOOD_SQR_REWARD
+
+
 
     def make_action(self, act_vec):
         """

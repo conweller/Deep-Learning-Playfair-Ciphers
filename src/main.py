@@ -5,8 +5,7 @@ import training_data as td
 
 # =========================== READ IN TRAING DATA ============================
 # Default datafile
-DATA_FILE = '../data/melville-moby_dick.txt'
-
+DATA_FILE = '../data/melville-moby_dick.txt' 
 # Size of each chunk of training data, must be even
 SUBSET_SZ = 100
 

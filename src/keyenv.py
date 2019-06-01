@@ -387,7 +387,40 @@ class KeyState:
                             # self.add_char(d2, (max_row2*5) + max_col2)
                             self.add_char(d1, (max_row2*5) + max_col2)
                             self.txt_idx += 2
-                            return GOOD_SQR_REWARD       
+                            return GOOD_SQR_REWARD
+        if len(avbl_chars) == 1:
+            if e1 not in avbl_chars and e2 not in avbl_chars and d1 not in avbl_chars:  # d2 is missing
+                row_used1 = self.used[e2] // 5
+                col_used1 = self.used[e1] % 5 
+                we_good = (row_used1 * 5) + col_used1 in self.avbl
+                if we_good:
+                    self.add_char(d2, (row_used1 * 5) + col_used1)
+                    self.txt_idx += 2
+                    return GOOD_SQR_REWARD
+            if e1 not in avbl_chars and e2 not in avbl_chars and d2 not in avbl_chars:  # d1 is missing
+                row_used1 = self.used[e1] // 5
+                col_used1 = self.used[e2] % 5 
+                we_good = (row_used1 * 5) + col_used1 in self.avbl
+                if we_good:
+                    self.add_char(d1, (row_used1 * 5) + col_used1)
+                    self.txt_idx += 2
+                    return GOOD_SQR_REWARD
+            if e1 not in avbl_chars and d1 not in avbl_chars and d2 not in avbl_chars:  # e2 is missing
+                row_used1 = self.used[d2] // 5
+                col_used1 = self.used[d1] % 5 
+                we_good = (row_used1 * 5) + col_used1 in self.avbl
+                if we_good:
+                    self.add_char(e2, (row_used1 * 5) + col_used1)
+                    self.txt_idx += 2
+                    return GOOD_SQR_REWARD
+            if e2 not in avbl_chars and d1 not in avbl_chars and d2 not in avbl_chars:  # e1 is missing
+                row_used1 = self.used[d1] // 5
+                col_used1 = self.used[d2] % 5 
+                we_good = (row_used1 * 5) + col_used1 in self.avbl
+                if we_good:
+                    self.add_char(e1, (row_used1 * 5) + col_used1)
+                    self.txt_idx += 2
+                    return GOOD_SQR_REWARD  
 
     def make_action(self, act_vec):
         """

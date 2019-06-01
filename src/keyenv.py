@@ -256,7 +256,7 @@ class KeyState:
                     # self.add_char(e2, (max_row2*5) + max_col1)
                     self.txt_idx += 2
                     return GOOD_SQR_REWARD
-            if d1 not in avbl_chars and d2 not in avbl_chars:     # untested 5/27
+            if d1 not in avbl_chars and d2 not in avbl_chars:    #  If something breaks retest this/ but I did test it 
                 row_used1 = self.used[d1] // 5
                 col_used1 = self.used[d1] % 5
                 row_used2 = self.used[d2] // 5
@@ -284,7 +284,7 @@ class KeyState:
                     self.add_char(e2, (max_row2*5) + max_col2)
                     self.txt_idx += 2
                     return GOOD_SQR_REWARD
-            if d1 not in avbl_chars and e1 not in avbl_chars:     # untested 5/27
+            if d1 not in avbl_chars and e1 not in avbl_chars:     # both in same row, tested 6/1
                 row_used1 = self.used[d1] // 5
                 col_used1 = self.used[d1] % 5
                 row_used2 = self.used[e1] // 5
@@ -294,8 +294,6 @@ class KeyState:
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
                     return
                 if col_used1 == col_used2:
-                    return
-                if row_used1 == row_used2:
                     return
                 if row_used1 == row_used2:
                     max_row1 = row_used1
@@ -312,9 +310,9 @@ class KeyState:
                             self.add_char(e2, (max_row2*5) + max_col1)
                             self.txt_idx += 2
                             return GOOD_SQR_REWARD
-            if d1 not in avbl_chars and e2 not in avbl_chars:  #untested 5/27
-                row_used1 = self.used[d1] // 5
-                col_used1 = self.used[d1] % 5
+            if d2 not in avbl_chars and e2 not in avbl_chars:     # both in same row, tested!
+                row_used1 = self.used[d2] // 5
+                col_used1 = self.used[d2] % 5
                 row_used2 = self.used[e2] // 5
                 col_used2 = self.used[e2] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
@@ -324,14 +322,38 @@ class KeyState:
                 if col_used1 == col_used2:
                     return
                 if row_used1 == row_used2:
+                    max_row1 = row_used1
+                    max_col1 = col_used1  # d2
+                    max_col2 = col_used2  # e2
+                    for i in range(len(rows)-1):
+                        max_row2 = rows[-1-i][0]
+                        we_good = (max_row2 * 5) + max_col1 in self.avbl
+                        we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                        if we_good:
+                            # self.add_char(d1, (max_row1*5) + max_col1)
+                            self.add_char(d1, (max_row2*5) + max_col2)
+                            # self.add_char(d2, (max_row2*5) + max_col2)
+                            self.add_char(e1, (max_row2*5) + max_col1)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+            if d1 not in avbl_chars and e2 not in avbl_chars:  # both in same column, tested 6/1, feel pretty good about this one
+                row_used1 = self.used[d1] // 5
+                col_used1 = self.used[d1] % 5
+                row_used2 = self.used[e2] // 5
+                col_used2 = self.used[e2] % 5
+                if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
                     return
-                if col_used1 == col_used2:
+                if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
+                    return
+                if row_used1 == row_used2:  #  is this necessary? Possible Optimaztion.
+                    return
+                if col_used1 == col_used2:                   
                     max_col1 = col_used1
                     max_row1 = row_used1  # d1
                     max_row2 = row_used2  # e2
-                    for i in range(len(cols-1)):
+                    for i in range(len(cols)-1):
                         max_col2 = cols[-1-i][0]
-                        we_good = (max_row1 * 5) + max_col1 in self.avbl
+                        we_good = (max_row1 * 5) + max_col2 in self.avbl
                         we_good &= (max_row2 * 5) + max_col2 in self.avbl
                         if we_good:
                             # self.add_char(d1, (max_row1*5) + max_col1)
@@ -339,7 +361,33 @@ class KeyState:
                             # self.add_char(d2, (max_row2*5) + max_col2)
                             self.add_char(d2, (max_row2*5) + max_col2)
                             self.txt_idx += 2
-                            return GOOD_SQR_REWARD        
+                            return GOOD_SQR_REWARD
+            if d2 not in avbl_chars and e1 not in avbl_chars:  # both in same column, tested 6/1, feel pretty good about this one
+                row_used1 = self.used[d2] // 5
+                col_used1 = self.used[d2] % 5
+                row_used2 = self.used[e1] // 5
+                col_used2 = self.used[e1] % 5
+                if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
+                    return
+                if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
+                    return
+                if row_used1 == row_used2:  #  is this necessary? Possible Optimaztion.
+                    return
+                if col_used1 == col_used2:                   
+                    max_col1 = col_used1
+                    max_row1 = row_used1  # d2
+                    max_row2 = row_used2  # e1
+                    for i in range(len(cols)-1):
+                        max_col2 = cols[-1-i][0]
+                        we_good = (max_row1 * 5) + max_col2 in self.avbl
+                        we_good &= (max_row2 * 5) + max_col2 in self.avbl
+                        if we_good:
+                            # self.add_char(d1, (max_row1*5) + max_col1)
+                            self.add_char(e2, (max_row1*5) + max_col2)
+                            # self.add_char(d2, (max_row2*5) + max_col2)
+                            self.add_char(d1, (max_row2*5) + max_col2)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD       
 
     def make_action(self, act_vec):
         """

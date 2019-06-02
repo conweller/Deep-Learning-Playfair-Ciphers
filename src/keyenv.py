@@ -83,7 +83,23 @@ class KeyState:
         Returns:
             Reward for the action
         """
-        print("column")
+        avbl_chars = self.check_avbl()
+        d1 = self.decp_txt[self.txt_idx]
+        d2 = self.decp_txt[self.txt_idx+1]
+        e1 = self.encp_txt[self.txt_idx]
+        e2 = self.encp_txt[self.txt_idx+1]
+        if not avbl_chars:
+            print("all chars used")
+            return -12242134
+        cols = enumerate(self.avbl_col)
+        if len(avbl_chars) == 4:
+            # in this case columns are only usisble if they have > 3 open spots
+            cols = list([c for c in cols if c[1] > 3])
+            cols.sort(key=lambda tup: tup[1])
+            for i in range(len(cols)-1):
+                max_col = cols[-1-i][0]
+                # check what spot is being used in max col, then randomize
+                # where we place things 
 
 # The following function is kind of ridiculous, but it works and would've been
 #   difficult to implement in a different manner
@@ -99,8 +115,6 @@ class KeyState:
         d2 = self.decp_txt[self.txt_idx+1]
         e1 = self.encp_txt[self.txt_idx]
         e2 = self.encp_txt[self.txt_idx+1]
-        print(d1)
-        print(d2)
         if not avbl_chars:
             print("all chars used")
             return -12242134

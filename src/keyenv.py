@@ -222,99 +222,104 @@ class KeyState:
                             return GOOD_SQR_REWARD
             else:
                 if d1 in self.used:
-                    d1_idx = self.used[d1] // 5
+                    d1_idx = self.used[d1] % 5
+                    d1_idx_in_col = self.used[d1] // 5
                     cur_col = list([s for s in self.avbl if s % 5 == d1_idx])
                     valid_placements = []
-                    if len(cur_col == 4):
+                    if len(cur_col) == 4:
                         for i in range(0, 5):
-                            if d1_idx == i:
+                            if d1_idx_in_col == i:
                                 valid_placements.append((i, (i+2) % 5))
                                 valid_placements.append((i, (i+3) % 5))
-                    elif len(cur_col == 3):
+                    elif len(cur_col) == 3:
                         for i in range(0,5):
-                            if d1_idx == i:
-                                if ((d1_idx + 2)%5)*5 not in cur_col:
+                            if d1_idx_in_col == i:
+                                if ((i + 2)%5)*5 not in cur_col:
                                     valid_placements.append((i, (i+3) % 5))
-                                if ((d1_idx + 4)%5)*5 not in cur_col:
+                                if ((i + 4)%5)*5 not in cur_col:
                                     valid_placements.append((i, (i+2) % 5))
                     if valid_placements != []:
                         placement = random.choice(valid_placements)
-                        # self.add_char(d1, placement[0] * 5 + max_col)
-                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
-                        self.add_char(d2, placement[1] * 5 + max_col)
-                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        # self.add_char(d1, placement[0] * 5 + d1_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + d1_idx)
+                        self.add_char(d2, placement[1] * 5 + d1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + d1_idx)
                         self.txt_idx += 2
                         return GOOD_SQR_REWARD
                 elif d2 in self.used:
-                    d2_idx = self.used[d2] // 5
+                    d2_idx = self.used[d2] % 5
+                    d2_idx_in_col = self.used[d2] // 5
                     cur_col = list([s for s in self.avbl if s % 5 == d2_idx])
                     valid_placements = []
-                    if len(cur_col == 4):
+                    if len(cur_col) == 4:
                         for i in range(0, 5):
-                            if d2_idx == i:
+                            if d2_idx_in_col == i:
                                 valid_placements.append(((i+2) % 5, i))
                                 valid_placements.append(((i+3) % 5, i))
-                    elif len(cur_col == 3):
+                    elif len(cur_col) == 3:
                         for i in range(0,5):
-                            if d2_idx == i:
-                                if ((d2_idx + 2)%5)*5 not in cur_col:
+                            if d2_idx_in_col == i:
+                                if ((i + 2)%5)*5 not in cur_col:
                                     valid_placements.append(((i+3) % 5, i))
-                                if ((d2_idx + 4)%5)*5 not in cur_col:
+                                if ((i + 4)%5)*5 not in cur_col:
                                     valid_placements.append(((i+2) % 5, i))
                     if valid_placements != []:
                         placement = random.choice(valid_placements)
-                        self.add_char(d1, placement[0] * 5 + max_col)
-                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
-                        # self.add_char(d2, placement[1] * 5 + max_col)
-                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.add_char(d1, placement[0] * 5 + d2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + d2_idx)
+                        # self.add_char(d2, placement[1] * 5 + d2_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + d2_idx)
                         self.txt_idx += 2
                         return GOOD_SQR_REWARD
                 elif e1 in self.used:
-                    e1_idx = self.used[e1] // 5
+                    e1_idx = self.used[e1] % 5
+                    e1_idx_in_col = self.used[e1] // 5
                     cur_col = list([s for s in self.avbl if s % 5 == e1_idx])
                     valid_placements = []
-                    if len(cur_col == 4):
+                    if len(cur_col) == 4:
                         for i in range(0, 5):
-                            if e1_idx == i:
+                            if e1_idx_in_col == i:
                                 valid_placements.append(((i+4) % 5, (i+1) % 5))
                                 valid_placements.append(((i+4) % 5, (i+2) % 5))
-                    elif len(cur_col == 3):
+                    elif len(cur_col) == 3:
                         for i in range(0,5):
-                            if e1_idx == i:
-                                if ((e1_idx + 1)%5)*5 not in cur_col:
+                            if e1_idx_in_col == i:
+                                if ((i + 1)%5)*5 not in cur_col:
                                     valid_placements.append(((i+4) % 5, (i+2) % 5))
-                                if ((e1_idx + 3)%5)*5 not in cur_col:
+                                if ((i + 3)%5)*5 not in cur_col:
                                     valid_placements.append(((i+4) % 5, (i+1) % 5))
                     if valid_placements != []:
                         placement = random.choice(valid_placements)
-                        self.add_char(d1, placement[0] * 5 + max_col)
-                        # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
-                        self.add_char(d2, placement[1] * 5 + max_col)
-                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.add_char(d1, placement[0] * 5 + e1_idx)
+                        # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + e1_idx)
+                        self.add_char(d2, placement[1] * 5 + e1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e1_idx)
                         self.txt_idx += 2
                         return GOOD_SQR_REWARD
                 elif e2 in self.used:
-                    e2_idx = self.used[e1] // 5
+                    e2_idx = self.used[e2] % 5
+                    e2_idx_in_col = self.used[e2] // 5
                     cur_col = list([s for s in self.avbl if s % 5 == e2_idx])
                     valid_placements = []
-                    if len(cur_col == 4):
+                    print(cur_col)
+                    if len(cur_col) == 4:
                         for i in range(0, 5):
-                            if e2_idx == i:
+                            if e2_idx_in_col == i:
                                 valid_placements.append(((i+1) % 5, (i+4) % 5))
                                 valid_placements.append(((i+2) % 5, (i+4) % 5))
-                    elif len(cur_col == 3):
+                    elif len(cur_col) == 3:
                         for i in range(0,5):
-                            if e2_idx == i:
-                                if ((e2_idx + 1)%5)*5 not in cur_col:
+                            if e2_idx_in_col == i:
+                                if ((i + 1)%5)*5 not in cur_col:
                                     valid_placements.append(((i+2) % 5, (i+4) % 5))
-                                if ((e2_idx + 3)%5)*5 not in cur_col:
+                                if ((i + 3)%5)*5 not in cur_col:
                                     valid_placements.append(((i+1) % 5, (i+4) % 5))
                     if valid_placements != []:
                         placement = random.choice(valid_placements)
-                        self.add_char(d1, placement[0] * 5 + max_col)
-                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
-                        self.add_char(d2, placement[1] * 5 + max_col)
-                        # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.add_char(d1, placement[0] * 5 + e2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + e2_idx)
+                        self.add_char(d2, placement[1] * 5 + e2_idx)
+                        # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e2_idx)
                         self.txt_idx += 2
                         return GOOD_SQR_REWARD
 

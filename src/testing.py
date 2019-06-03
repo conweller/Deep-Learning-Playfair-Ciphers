@@ -4,7 +4,7 @@ import cipher
 KEY = cipher.generate_key()
 # print(key)
 
-CIPHERTEXT = "efghxy"
-TEXT = "abcdcb"
+TEXT =       "abefghijk"
+CIPHERTEXT = "bclmnopqr"
 
 KS = keyenv.KeyState(TEXT, CIPHERTEXT, KEY)

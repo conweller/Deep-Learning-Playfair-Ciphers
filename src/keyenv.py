@@ -1,5 +1,6 @@
 """Contain KeyState Class"""
 import cipher
+import random
 GOOD_SQR_REWARD = 10
 
 
@@ -96,10 +97,230 @@ class KeyState:
             # in this case columns are only usisble if they have > 3 open spots
             cols = list([c for c in cols if c[1] > 3])
             cols.sort(key=lambda tup: tup[1])
-            for i in range(len(cols)-1):
+            for i in range(len(cols)):
                 max_col = cols[-1-i][0]
-                # check what spot is being used in max col, then randomize
-                # where we place things 
+                cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                valid_placements = []
+                # check what spot (if any) is being used in max col, then
+                # randomize where we place things
+                if len(cur_col) == 5:
+                    for idx in range(0, 5):
+                        valid_placements.append((idx, (idx+2) % 5))
+                        valid_placements.append((idx, (idx+3) % 5))
+                else:
+                    for j in range(0, 5):
+                        if max_col + (j*5) not in cur_col:
+                            valid_placements.append(((j+1)%5, (j+3)%5))
+                            valid_placements.append(((j+3)%5, (j+1)%5))
+                placement = random.choice(valid_placements)
+                self.add_char(d1, placement[0] * 5 + max_col)
+                self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                self.add_char(d2, placement[1] * 5 + max_col)
+                self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        if len(avbl_chars) == 3:
+            cols = list([c for c in cols if c[1] > 2])
+            cols.sort(key=lambda tup: tup[1])
+            if len(set([d1, d2, e1, e2])) == 3:
+                # e1 cant possibly equal e2 and d1 cant equal d2 because of how
+                #   the cipher works
+                if d1 == e1:
+                    return -123412341
+                elif d2 == e2:
+                    return -123412341
+                elif d1 == e2:
+                    for i in range(len(cols)):
+                        max_col = cols[-1-i][0]
+                        cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_col) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+4) % 5))
+                        if len(cur_col) == 4:
+                            for j in range(0, 5):
+                                if max_col + (j*5) not in cur_col:
+                                    valid_placements.append((j+2) % 5, (j+1) % 5)
+                                    valid_placements.append((j+3) % 5, (j+2) % 5)
+                        if len(cur_col) == 3:
+                            for j in range(0, 5):
+                                if max_col + (j*5) not in cur_col:
+                                    if max_col + (((j+1)%5)*5) not in cur_col:
+                                        valid_placements.append((j+3) % 5, (j+2) % 5)
+                                    if max_col + (((j+4)%5)*5) not in cur_col:
+                                        valid_placements.append((j+2) % 5, (j+1) % 5)
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] * 5 + max_col)
+                            self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                            self.add_char(d2, placement[1] * 5 + max_col)
+                            # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+                        # if len(cur_col) == 4:
+                elif d2 == e1:
+                    for i in range(len(cols)):
+                        max_col = cols[-1-i][0]
+                        cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_col) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+1) % 5))
+                        if len(cur_col) == 4:
+                            if max_col not in cur_col:  # first in col
+                                valid_placements.append((1, 2))
+                                valid_placements.append((2, 3))
+                            if max_col + 5 not in cur_col:  # Second in col
+                                valid_placements.append((2, 3))
+                                valid_placements.append((3, 4))
+                            if max_col + 10 not in cur_col:  # third in col
+                                valid_placements.append((3, 4))
+                                valid_placements.append((4, 0))
+                            if max_col + 15 not in cur_col:  # fourth in col
+                                valid_placements.append((4, 0))
+                                valid_placements.append((0, 1))
+                            if max_col + 20 not in cur_col:  # fifth in col
+                                valid_placements.append((0, 1))
+                                valid_placements.append((1, 2))
+                        if len(cur_col) == 3:
+                            if max_col not in cur_col:  # first in col
+                                if max_col + 5 not in cur_col:
+                                    valid_placements.append((2, 3))
+                                elif max_col + 20 not in cur_col:
+                                    valid_placements.append((1, 2))
+                            if max_col + 5 not in cur_col:  # Second in col
+                                if max_col not in cur_col:
+                                    valid_placements.append((2, 3))
+                                if max_col + 10 not in cur_col:
+                                    valid_placements.append((3, 4))
+                            if max_col + 10 not in cur_col:  # third in col
+                                if max_col + 15 not in cur_col:
+                                    valid_placements.append((4, 0))
+                                if max_col + 5 not in cur_col:
+                                    valid_placements.append((3, 4))
+                            if max_col + 15 not in cur_col:  # fourth in col
+                                if max_col + 10 not in cur_col:
+                                    valid_placements.append((4, 0))
+                                if max_col + 20 not in cur_col:
+                                    valid_placements.append((0, 1))
+                            if max_col + 20 not in cur_col:  # fifth in col
+                                if max_col + 15 not in cur_col:
+                                    valid_placements.append((0, 1))
+                                if max_col not in cur_col:
+                                    valid_placements.append((1, 2))
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] * 5 + max_col)
+                            # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                            self.add_char(d2, placement[1] * 5 + max_col)
+                            self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+            else:
+                if d1 in self.used:
+                    d1_idx = self.used[d1] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == d1_idx])
+                    valid_placements = []
+                    if len(cur_col == 4):
+                        for i in range(0, 5):
+                            if d1_idx == i:
+                                valid_placements.append((i, (i+2) % 5))
+                                valid_placements.append((i, (i+3) % 5))
+                    elif len(cur_col == 3):
+                        for i in range(0,5):
+                            if d1_idx == i:
+                                if ((d1_idx + 2)%5)*5 not in cur_col:
+                                    valid_placements.append((i, (i+3) % 5))
+                                if ((d1_idx + 4)%5)*5 not in cur_col:
+                                    valid_placements.append((i, (i+2) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        # self.add_char(d1, placement[0] * 5 + max_col)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                        self.add_char(d2, placement[1] * 5 + max_col)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif d2 in self.used:
+                    d2_idx = self.used[d2] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == d2_idx])
+                    valid_placements = []
+                    if len(cur_col == 4):
+                        for i in range(0, 5):
+                            if d2_idx == i:
+                                valid_placements.append(((i+2) % 5, i))
+                                valid_placements.append(((i+3) % 5, i))
+                    elif len(cur_col == 3):
+                        for i in range(0,5):
+                            if d2_idx == i:
+                                if ((d2_idx + 2)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+3) % 5, i))
+                                if ((d2_idx + 4)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+2) % 5, i))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + max_col)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                        # self.add_char(d2, placement[1] * 5 + max_col)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e1 in self.used:
+                    e1_idx = self.used[e1] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == e1_idx])
+                    valid_placements = []
+                    if len(cur_col == 4):
+                        for i in range(0, 5):
+                            if e1_idx == i:
+                                valid_placements.append(((i+4) % 5, (i+1) % 5))
+                                valid_placements.append(((i+4) % 5, (i+2) % 5))
+                    elif len(cur_col == 3):
+                        for i in range(0,5):
+                            if e1_idx == i:
+                                if ((e1_idx + 1)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+4) % 5, (i+2) % 5))
+                                if ((e1_idx + 3)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+4) % 5, (i+1) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + max_col)
+                        # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                        self.add_char(d2, placement[1] * 5 + max_col)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e2 in self.used:
+                    e2_idx = self.used[e1] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == e2_idx])
+                    valid_placements = []
+                    if len(cur_col == 4):
+                        for i in range(0, 5):
+                            if e2_idx == i:
+                                valid_placements.append(((i+1) % 5, (i+4) % 5))
+                                valid_placements.append(((i+2) % 5, (i+4) % 5))
+                    elif len(cur_col == 3):
+                        for i in range(0,5):
+                            if e2_idx == i:
+                                if ((e2_idx + 1)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+2) % 5, (i+4) % 5))
+                                if ((e2_idx + 3)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+1) % 5, (i+4) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + max_col)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                        self.add_char(d2, placement[1] * 5 + max_col)
+                        # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+
+
+
+
 
 # The following function is kind of ridiculous, but it works and would've been
 #   difficult to implement in a different manner
@@ -279,8 +500,8 @@ class KeyState:
                     return
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
                     return
-                if col_used1 == col_used2:
-                    return
+                if col_used1 == col_used2: 
+                    return 
                 if row_used1 == row_used2:
                     return
                 max_row1 = row_used1

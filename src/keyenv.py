@@ -329,6 +329,14 @@ class KeyState:
                 if e2 == d2:
                     return -1234123
                 if d1 == e2:
+                    if d1 in self.used:
+                        if (self.used[d1] + 5) % 25 in self.avbl:
+                            if (self.used[d1] + 20) % 25 in self.avbl:
+                                self.add_char(d2, (self.used[d1] + 20) % 25)
+                                self.add_char(e1, (self.used[d1] + 5) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
                     if d2 in self.used:
                         if (self.used[d2] + 5)%25 in self.avbl:
                             if (self.used[d2] + 10)%25 in self.avbl:
@@ -348,6 +356,14 @@ class KeyState:
                             return -1012432341
                         return -1012432341
                 if d2 == e1:
+                    if d2 in self.used:
+                        if (self.used[d2] + 5) % 25 in self.avbl:
+                            if (self.used[d2] + 20) % 25 in self.avbl:
+                                self.add_char(d1, (self.used[d2] + 20) % 25)
+                                self.add_char(e2, (self.used[d2] + 5) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
                     if d1 in self.used:
                         if (self.used[d1] + 5)%25 in self.avbl:
                             if (self.used[d1] + 10)%25 in self.avbl:
@@ -464,6 +480,15 @@ class KeyState:
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
                         return -1231243124
+        # if len(avbl_chars) == 1:
+        #     if len(set([d1, d2, e1, e2])) == 3:
+        #         if d1 == d2:
+        #             return -12342134123
+        #         if e2 == d2:
+        #             return -1234123
+        #         if d1 == e2:
+        #             if d1 in self.used:
+
 
 
 

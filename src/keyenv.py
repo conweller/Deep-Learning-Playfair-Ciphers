@@ -322,6 +322,55 @@ class KeyState:
                         # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e2_idx)
                         self.txt_idx += 2
                         return GOOD_SQR_REWARD
+        if len(avbl_chars) == 2:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == e1:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d2 in self.used:
+                        if (self.used[d2] + 5)%25 in self.avbl:
+                            if (self.used[d2] + 10)%25 in self.avbl:
+                                self.add_char(d1, (self.used[d2]+5) % 25)
+                                self.add_char(e1, (self.used[d2]+10) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e1 in self.used:
+                        if (self.used[e1] + 15)%25 in self.avbl:
+                            if (self.used[e1] + 20)%25 in self.avbl:
+                                self.add_char(d1, (self.used[e1]+20) % 25)
+                                self.add_char(d2, (self.used[e1]+15) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                if d2 == e1:
+                    if d1 in self.used:
+                        if (self.used[d1] + 5)%25 in self.avbl:
+                            if (self.used[d1] + 10)%25 in self.avbl:
+                                self.add_char(d2, (self.used[d1]+5) % 25)
+                                self.add_char(e2, (self.used[d1]+10) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e2 in self.used:
+                        if (self.used[e2] + 15)%25 in self.avbl:
+                            if (self.used[e2] + 20)%25 in self.avbl:
+                                self.add_char(d2, (self.used[e2]+20) % 25)
+                                self.add_char(d1, (self.used[e2]+15) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+            else:
+
+
+
+
 
 
 

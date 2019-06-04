@@ -5,6 +5,6 @@ KEY = cipher.generate_key()
 # print(key)
 
 TEXT =       "abefghijk"
-CIPHERTEXT = "cdlmnopqr"
+CIPHERTEXT = "calmnopqr"
 
 KS = keyenv.KeyState(TEXT, CIPHERTEXT, KEY)

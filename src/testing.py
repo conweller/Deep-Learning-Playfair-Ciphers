@@ -5,6 +5,13 @@ KEY = cipher.generate_key()
 # print(key)
 
 TEXT =       "abefghijk"
-CIPHERTEXT = "bclmnopqr"
+CIPHERTEXT = "cdlmnopqr"
 
 KS = keyenv.KeyState(TEXT, CIPHERTEXT, KEY)
+KS.add_char("b", 10)
+KS.add_char("c", 5)
+KS.add_char("d", 15)
+KS.get_key()
+print()
+KS.action_column()
+KS.get_key()

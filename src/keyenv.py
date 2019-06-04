@@ -89,9 +89,9 @@ class KeyState:
         d2 = self.decp_txt[self.txt_idx+1]
         e1 = self.encp_txt[self.txt_idx]
         e2 = self.encp_txt[self.txt_idx+1]
-        if not avbl_chars:
-            print("all chars used")
-            return -12242134
+        # if not avbl_chars:
+        #     print("all chars used")
+        #     return -12242134
         cols = enumerate(self.avbl_col)
         if len(avbl_chars) == 4:
             # in this case columns are only usisble if they have > 3 open spots
@@ -565,6 +565,16 @@ class KeyState:
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
                     return -1231243124
+        if len(avbl_chars) == 0:
+            we_good = True
+            we_good &= self.used[d1] % 5 == self.used[d2] % 5
+            we_good &= self.used[e1] == (self.used[d1] + 5) % 25
+            we_good &= self.used[e2] == (self.used[d2] + 5) % 25
+            if we_good:
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        return -1231243124
+
 
 
 
@@ -588,9 +598,9 @@ class KeyState:
         d2 = self.decp_txt[self.txt_idx+1]
         e1 = self.encp_txt[self.txt_idx]
         e2 = self.encp_txt[self.txt_idx+1]
-        if not avbl_chars:
-            print("all chars used")
-            return -12242134
+        # if not avbl_chars:
+        #     print("all chars used")
+        #     return -12242134
         rows = enumerate(self.avbl_row)
         rows = list([r for r in rows if r[1] > 1])
         rows.sort(key=lambda tup: tup[1])

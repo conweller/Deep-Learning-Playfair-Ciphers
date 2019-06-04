@@ -480,14 +480,14 @@ class KeyState:
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
                         return -1231243124
-        # if len(avbl_chars) == 1:
-        #     if len(set([d1, d2, e1, e2])) == 3:
-        #         if d1 == d2:
-        #             return -12342134123
-        #         if e2 == d2:
-        #             return -1234123
-        #         if d1 == e2:
-        #             if d1 in self.used:
+        if len(avbl_chars) == 1:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == d2:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d1 in self.used:
 
 
 

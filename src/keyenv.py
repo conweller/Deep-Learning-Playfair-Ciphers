@@ -2,6 +2,7 @@
 import cipher
 import random
 GOOD_SQR_REWARD = 10
+BAD_SQR_REWARD = -10
 
 
 class KeyState:
@@ -117,9 +118,9 @@ class KeyState:
                 # e1 cant possibly equal e2 and d1 cant equal d2 because of how
                 #   the cipher works
                 if d1 == e1:
-                    return -123412341
+                    return BAD_SQR_REWARD
                 elif d2 == e2:
-                    return -123412341
+                    return BAD_SQR_REWARD
                 elif d1 == e2:
                     for i in range(len(rows)):
                         max_row = rows[-1-i][0]
@@ -314,9 +315,9 @@ class KeyState:
         if len(avbl_chars) == 2:
             if len(set([d1, d2, e1, e2])) == 3:
                 if d1 == e1:
-                    return -12342134123
+                    return BAD_SQR_REWARD
                 if e2 == d2:
-                    return -1234123
+                    return BAD_SQR_REWARD
                 if d1 == e2:
                     if d1 in self.used:
                         if (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
@@ -325,7 +326,7 @@ class KeyState:
                                 self.add_char(e1, (self.used[d1] + 1) % 5+ 5 * (self.used[d1] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1012432341
+                        return BAD_SQR_REWARD
                     if d2 in self.used:
                         if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
                             if (self.used[d2] + 2) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
@@ -333,8 +334,8 @@ class KeyState:
                                 self.add_char(e1, (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                     elif e1 in self.used:
                         if (self.used[e1] + 3)% 5 + 5 * (self.used[e1] // 5) in self.avbl:
                             if (self.used[e1] + 4) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
@@ -342,8 +343,8 @@ class KeyState:
                                 self.add_char(d2, (self.used[e1]+3) % 5 + 5 * (self.used[e1] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                 if d2 == e1:
                     if d2 in self.used:
                         if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5)in self.avbl:
@@ -352,7 +353,7 @@ class KeyState:
                                 self.add_char(e2, (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1012432341
+                        return BAD_SQR_REWARD
                     if d1 in self.used:
                         if (self.used[d1] + 1)% 5 + 5 * (self.used[d1] // 5) in self.avbl:
                             if (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
@@ -360,8 +361,8 @@ class KeyState:
                                 self.add_char(e2, (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5))
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                     elif e2 in self.used:
                         if (self.used[e2] + 3) % 5 + 5 * (self.used[e2] // 5) in self.avbl:
                             if (self.used[e2] + 4) % 5 + 5 * (self.used[e2] // 5) in self.avbl:
@@ -369,8 +370,8 @@ class KeyState:
                                 self.add_char(d1, (self.used[e2]+ 3) % 5 + 5 * (self.used[e2] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
             else:
                 if d1 in self.used:
                     if e1 in self.used:
@@ -387,7 +388,7 @@ class KeyState:
                                     self.add_char(e2, (self.used[d1]+4) % 5 + 5 * (self.used[d1] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if d2 in self.used:
                         if self.used[d2] == (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5):
                             if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5)in self.avbl:
@@ -403,7 +404,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if e2 in self.used:
                         if self.used[e2] == (self.used[d1] + 3) % 5 + 5 * (self.used[d1] // 5):
                             if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
@@ -419,7 +420,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 elif d2 in self.used:
                     if e1 in self.used:
                         if self.used[e1] == (self.used[d2] + 3) % 5 + 5 * (self.used[d2] // 5):
@@ -436,7 +437,7 @@ class KeyState:
                                     self.add_char(e2, (self.used[d2]+1) % 25 + 5 * (self.used[d2] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if e2 in self.used:
                         if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
                             if (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
@@ -451,7 +452,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d2]+4) % 25 + 5 * (self.used[d2] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 elif e1 in self.used:
                     if e2 in self.used:
                         if self.used[e2] == (self.used[e1] + 2) % 5 + 5 * (self.used[e1] // 5):
@@ -468,13 +469,13 @@ class KeyState:
                                     self.add_char(d2, (self.used[e1]+2) % 5 + 5 * (self.used[e1] // 5))
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
         if len(avbl_chars) == 1:
             if len(set([d1, d2, e1, e2])) == 3:
                 if d1 == d2:
-                    return -12342134123
+                    return BAD_SQR_REWARD
                 if e2 == d2:
-                    return -1234123
+                    return BAD_SQR_REWARD
                 if d1 == e2:
                     if d1 in self.used:
                         if d2 in self.used:
@@ -483,21 +484,21 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5))
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                         if e1 in self.used:
                             if self.used[e1] == (self.used[d1]+1)%5 + 5 * (self.used[d1] // 5):
                                 if (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
                                     self.add_char(d2, (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5))
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                     if e1 in self.used and d2 in self.used:
                         if self.used[e1] == (self.used[d2] + 2) % 5 + 5 * (self.used[d2] // 5):
                             if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
                                 self.add_char(d1, (self.used[d2] + 1)%5 + 5 * (self.used[d2] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 if d2 == e1:
                     if d2 in self.used:
                         if d1 in self.used:
@@ -506,21 +507,21 @@ class KeyState:
                                     self.add_char(e2, (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5))
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                         if e2 in self.used:
                             if self.used[e2] == (self.used[d2]+1)%5 + 5 * (self.used[d2] // 5):
                                 if (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
                                     self.add_char(d1, (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5))
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                     if e2 in self.used and d1 in self.used:
                         if self.used[e2] == (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5):
                             if (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
                                 self.add_char(d2, (self.used[d1] + 1)%5 + 5 * (self.used[d1] // 5))
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
             else:
                 if d1 in self.used:
                     if d2 in self.used:
@@ -531,21 +532,21 @@ class KeyState:
                                         self.add_char(e2,(self.used[d2]+1)%5 + 5 * (self.used[d1] // 5))
                                         self.txt_idx +=2
                                         return GOOD_SQR_REWARD
-                                return -1231243124
+                                return BAD_SQR_REWARD
                             elif e2 in self.used:
                                 if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
                                     if (self.used[d1]+1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
                                         self.add_char(e1,(self.used[d1]+1)%5 + 5 * (self.used[d2] // 5))
                                         self.txt_idx +=2
                                         return GOOD_SQR_REWARD
-                                return -1231243124
+                                return BAD_SQR_REWARD
                     elif self.used[e2] // 5 == self.used[d1] // 5:
                         if self.used[e1] == (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5):
                             if (self.used[e2]+ 4)% 5 + 5 * (self.used[d1] // 5) in self.avbl:
                                 self.add_char(d2,(self.used[e2]+ 4)% 5 + 5 * (self.used[d1] // 5))
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 if d2 in self.used:
                     if self.used[e1] // 5 == self.used[d2] // 5:
                         if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
@@ -553,7 +554,7 @@ class KeyState:
                                 self.add_char(d1,(self.used[e1]+4)%5 + 5 * (self.used[d2] // 5))
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
-                    return -1231243124
+                    return BAD_SQR_REWARD
         if len(avbl_chars) == 0:
             we_good = True
             we_good &= self.used[d1] // 5 == self.used[d2] // 5
@@ -562,7 +563,7 @@ class KeyState:
             if we_good:
                 self.txt_idx += 2
                 return GOOD_SQR_REWARD
-        return -1231243124
+        return BAD_SQR_REWARD
         print("row")
 
     def action_column(self):
@@ -614,9 +615,9 @@ class KeyState:
                 # e1 cant possibly equal e2 and d1 cant equal d2 because of how
                 #   the cipher works
                 if d1 == e1:
-                    return -123412341
+                    return BAD_SQR_REWARD
                 elif d2 == e2:
-                    return -123412341
+                    return BAD_SQR_REWARD
                 elif d1 == e2:
                     for i in range(len(cols)):
                         max_col = cols[-1-i][0]
@@ -812,9 +813,9 @@ class KeyState:
         if len(avbl_chars) == 2:
             if len(set([d1, d2, e1, e2])) == 3:
                 if d1 == e1:
-                    return -12342134123
+                    return BAD_SQR_REWARD
                 if e2 == d2:
-                    return -1234123
+                    return BAD_SQR_REWARD
                 if d1 == e2:
                     if d1 in self.used:
                         if (self.used[d1] + 5) % 25 in self.avbl:
@@ -823,7 +824,7 @@ class KeyState:
                                 self.add_char(e1, (self.used[d1] + 5) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1012432341
+                        return BAD_SQR_REWARD
                     if d2 in self.used:
                         if (self.used[d2] + 5)%25 in self.avbl:
                             if (self.used[d2] + 10)%25 in self.avbl:
@@ -831,8 +832,8 @@ class KeyState:
                                 self.add_char(e1, (self.used[d2]+10) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                     elif e1 in self.used:
                         if (self.used[e1] + 15)%25 in self.avbl:
                             if (self.used[e1] + 20)%25 in self.avbl:
@@ -840,8 +841,8 @@ class KeyState:
                                 self.add_char(d2, (self.used[e1]+15) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                 if d2 == e1:
                     if d2 in self.used:
                         if (self.used[d2] + 5) % 25 in self.avbl:
@@ -850,7 +851,7 @@ class KeyState:
                                 self.add_char(e2, (self.used[d2] + 5) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1012432341
+                        return BAD_SQR_REWARD
                     if d1 in self.used:
                         if (self.used[d1] + 5)%25 in self.avbl:
                             if (self.used[d1] + 10)%25 in self.avbl:
@@ -858,8 +859,8 @@ class KeyState:
                                 self.add_char(e2, (self.used[d1]+10) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
                     elif e2 in self.used:
                         if (self.used[e2] + 15)%25 in self.avbl:
                             if (self.used[e2] + 20)%25 in self.avbl:
@@ -867,8 +868,8 @@ class KeyState:
                                 self.add_char(d1, (self.used[e2]+15) % 25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                            return -1012432341
-                        return -1012432341
+                            return BAD_SQR_REWARD
+                        return BAD_SQR_REWARD
             else:
                 if d1 in self.used:
                     if e1 in self.used:
@@ -885,7 +886,7 @@ class KeyState:
                                     self.add_char(e2, (self.used[d1]+20) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if d2 in self.used:
                         if self.used[d2] == (self.used[d1] + 10) % 25:
                             if (self.used[d1]+5) % 25 in self.avbl:
@@ -901,7 +902,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1]+5) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if e2 in self.used:
                         if self.used[e2] == (self.used[d1] + 15) % 25:
                             if (self.used[d1]+5) % 25 in self.avbl:
@@ -917,7 +918,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1]+5) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 elif d2 in self.used:
                     if e1 in self.used:
                         if self.used[e1] == (self.used[d2] + 15) % 25:
@@ -934,7 +935,7 @@ class KeyState:
                                     self.add_char(e2, (self.used[d2]+5) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                     if e2 in self.used:
                         if self.used[e2] == (self.used[d2] + 5) % 25:
                             if (self.used[d2]+10) % 25 in self.avbl:
@@ -949,7 +950,7 @@ class KeyState:
                                     self.add_char(e1, (self.used[d2]+20) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 elif e1 in self.used:
                     if e2 in self.used:
                         if self.used[e2] == (self.used[e1] + 10) % 25:
@@ -966,13 +967,13 @@ class KeyState:
                                     self.add_char(d2, (self.used[e1]+10) % 25)
                                     self.txt_idx += 2
                                     return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
         if len(avbl_chars) == 1:
             if len(set([d1, d2, e1, e2])) == 3:
                 if d1 == d2:
-                    return -12342134123
+                    return BAD_SQR_REWARD
                 if e2 == d2:
-                    return -1234123
+                    return BAD_SQR_REWARD
                 if d1 == e2:
                     if d1 in self.used:
                         if d2 in self.used:
@@ -981,21 +982,21 @@ class KeyState:
                                     self.add_char(e1, (self.used[d1] + 5) % 25)
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                         if e1 in self.used:
                             if self.used[e1] == (self.used[d1]+5)%25:
                                 if (self.used[d1] + 20) % 25 in self.avbl:
                                     self.add_char(d2, (self.used[d1] + 20) % 25)
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                     if e1 in self.used and d2 in self.used:
                         if self.used[e1] == (self.used[d2] + 10) % 25:
                             if (self.used[d2] + 5) % 25 in self.avbl:
                                 self.add_char(d1, (self.used[d2] + 5)%25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 if d2 == e1:
                     if d2 in self.used:
                         if d1 in self.used:
@@ -1004,21 +1005,21 @@ class KeyState:
                                     self.add_char(e2, (self.used[d2] + 5) % 25)
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                         if e2 in self.used:
                             if self.used[e2] == (self.used[d2]+5)%25:
                                 if (self.used[d2] + 20) % 25 in self.avbl:
                                     self.add_char(d1, (self.used[d2] + 20) % 25)
                                     self.txt_idx +=2
                                     return GOOD_SQR_REWARD
-                            return -1231243124
+                            return BAD_SQR_REWARD
                     if e2 in self.used and d1 in self.used:
                         if self.used[e2] == (self.used[d1] + 10) % 25:
                             if (self.used[d1] + 5) % 25 in self.avbl:
                                 self.add_char(d2, (self.used[d1] + 5)%25)
                                 self.txt_idx +=2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
             else:
                 if d1 in self.used:
                     if d2 in self.used:
@@ -1029,21 +1030,21 @@ class KeyState:
                                         self.add_char(e2,(self.used[d2]+5)%25)
                                         self.txt_idx +=2
                                         return GOOD_SQR_REWARD
-                                return -1231243124
+                                return BAD_SQR_REWARD
                             elif e2 in self.used:
                                 if self.used[e2] == (self.used[d2] + 5) % 25:
                                     if (self.used[d1]+5) % 25 in self.avbl:
                                         self.add_char(e1,(self.used[d1]+5)%25)
                                         self.txt_idx +=2
                                         return GOOD_SQR_REWARD
-                                return -1231243124
+                                return BAD_SQR_REWARD
                     elif self.used[e2] % 5 == self.used[d1] % 5:
                         if self.used[e1] == (self.used[d1] + 5) % 25:
                             if (self.used[e2]+20)%25 in self.avbl:
                                 self.add_char(d2,(self.used[e2]+20)%25)
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
-                        return -1231243124
+                        return BAD_SQR_REWARD
                 if d2 in self.used:
                     if self.used[e1] % 5 == self.used[d2] % 5:
                         if self.used[e2] == (self.used[d2] + 5) % 25:
@@ -1051,7 +1052,7 @@ class KeyState:
                                 self.add_char(d1,(self.used[e1]+20)%25)
                                 self.txt_idx += 2
                                 return GOOD_SQR_REWARD
-                    return -1231243124
+                    return BAD_SQR_REWARD
         if len(avbl_chars) == 0:
             we_good = True
             we_good &= self.used[d1] % 5 == self.used[d2] % 5
@@ -1060,7 +1061,7 @@ class KeyState:
             if we_good:
                 self.txt_idx += 2
                 return GOOD_SQR_REWARD
-        return -1231243124
+        return BAD_SQR_REWARD
 
 
 
@@ -1119,7 +1120,7 @@ class KeyState:
                 row_used = self.used[e1] // 5
                 col_used = self.used[e1] % 5
                 if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
-                    return
+                    return BAD_SQR_REWARD
                 max_row1 = row_used
                 max_col2 = col_used
                 for i in range(len(rows)-1):
@@ -1143,7 +1144,7 @@ class KeyState:
                 row_used = self.used[e2] // 5
                 col_used = self.used[e2] % 5
                 if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
-                    return
+                    return BAD_SQR_REWARD
                 max_row2 = row_used
                 max_col1 = col_used
                 for i in range(len(rows)-1):
@@ -1167,7 +1168,7 @@ class KeyState:
                 row_used = self.used[d1] // 5
                 col_used = self.used[d1] % 5
                 if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
-                    return
+                    return BAD_SQR_REWARD
                 max_row1 = row_used
                 max_col1 = col_used
                 for i in range(len(rows)-1):
@@ -1191,7 +1192,7 @@ class KeyState:
                 row_used = self.used[d2] // 5
                 col_used = self.used[d2] % 5
                 if self.avbl_row[row_used]==0 or self.avbl_col[col_used]==0:
-                    return
+                    return BAD_SQR_REWARD
                 max_row2 = row_used
                 max_col2 = col_used
                 for i in range(len(rows)-1):
@@ -1218,13 +1219,13 @@ class KeyState:
                 row_used2 = self.used[e2] // 5
                 col_used2 = self.used[e2] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2:
-                    return
+                    return BAD_SQR_REWARD
                 if row_used1 == row_used2:
-                    return
+                    return BAD_SQR_REWARD
                 max_row1 = row_used1
                 max_col2 = col_used1
                 max_row2 = row_used2
@@ -1246,13 +1247,13 @@ class KeyState:
                 row_used2 = self.used[d2] // 5
                 col_used2 = self.used[d2] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2: 
-                    return 
+                    return  BAD_SQR_REWARD
                 if row_used1 == row_used2:
-                    return
+                    return BAD_SQR_REWARD
                 max_row1 = row_used1
                 max_col2 = col_used1
                 max_row2 = row_used2
@@ -1274,11 +1275,11 @@ class KeyState:
                 row_used2 = self.used[e1] // 5
                 col_used2 = self.used[e1] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2:
-                    return
+                    return BAD_SQR_REWARD
                 if row_used1 == row_used2:
                     max_row1 = row_used1
                     max_col1 = col_used1  # d1
@@ -1300,11 +1301,11 @@ class KeyState:
                 row_used2 = self.used[e2] // 5
                 col_used2 = self.used[e2] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2:
-                    return
+                    return BAD_SQR_REWARD
                 if row_used1 == row_used2:
                     max_row1 = row_used1
                     max_col1 = col_used1  # d2
@@ -1326,11 +1327,11 @@ class KeyState:
                 row_used2 = self.used[e2] // 5
                 col_used2 = self.used[e2] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if row_used1 == row_used2:  #  is this necessary? Possible Optimaztion.
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2:                   
                     max_col1 = col_used1
                     max_row1 = row_used1  # d1
@@ -1352,11 +1353,11 @@ class KeyState:
                 row_used2 = self.used[e1] // 5
                 col_used2 = self.used[e1] % 5
                 if self.avbl_row[row_used1]==0 or self.avbl_col[col_used1]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
-                    return
+                    return BAD_SQR_REWARD
                 if row_used1 == row_used2:  #  is this necessary? Possible Optimaztion.
-                    return
+                    return BAD_SQR_REWARD
                 if col_used1 == col_used2:                   
                     max_col1 = col_used1
                     max_row1 = row_used1  # d2

@@ -1,5 +1,6 @@
 """Contain KeyState Class"""
 import cipher
+import random
 GOOD_SQR_REWARD = 10
 
 
@@ -74,6 +75,494 @@ class KeyState:
         Returns:
             Reward for the given action
         """
+        avbl_chars = self.check_avbl()
+        d1 = self.decp_txt[self.txt_idx]
+        d2 = self.decp_txt[self.txt_idx+1]
+        e1 = self.encp_txt[self.txt_idx]
+        e2 = self.encp_txt[self.txt_idx+1]
+        # if not avbl_chars:
+        #     print("all chars used")
+        #     return -12242134
+        rows = enumerate(self.avbl_row)
+        if len(avbl_chars) == 4:
+            # in this case columns are only usisble if they have > 3 open spots
+            rows = list([r for r in rows if r[1] > 3])
+            rows.sort(key=lambda tup: tup[1])
+            for i in range(len(rows)):
+                max_row = rows[-1-i][0]
+                cur_row = list([s for s in self.avbl if s // 5 == max_row])
+                valid_placements = []
+                # check what spot (if any) is being used in max col, then
+                # randomize where we place things
+                if len(cur_row) == 5:
+                    for idx in range(0, 5):
+                        valid_placements.append((idx, (idx+2) % 5))
+                        valid_placements.append((idx, (idx+3) % 5))
+                else:
+                    for j in range(0, 5):
+                        if max_row*5 + j not in cur_row:
+                            valid_placements.append(((j+1)%5, (j+3)%5))
+                            valid_placements.append(((j+3)%5, (j+1)%5))
+                placement = random.choice(valid_placements)
+                self.add_char(d1, placement[0] +  5 * max_row)
+                self.add_char(e1, ((placement[0] + 1) % 5) + 5 * max_row)
+                self.add_char(d2, placement[1] + 5 * max_row)
+                self.add_char(e2, ((placement[1] + 1) % 5) + 5 * max_row)
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        if len(avbl_chars) == 3:
+            rows = list([r for r in rows if r[1] > 2])
+            rows.sort(key=lambda tup: tup[1])
+            if len(set([d1, d2, e1, e2])) == 3:
+                # e1 cant possibly equal e2 and d1 cant equal d2 because of how
+                #   the cipher works
+                if d1 == e1:
+                    return -123412341
+                elif d2 == e2:
+                    return -123412341
+                elif d1 == e2:
+                    for i in range(len(rows)):
+                        max_row = rows[-1-i][0]
+                        cur_row = list([s for s in self.avbl if s // 5 == max_row])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_row) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+4) % 5))
+                        if len(cur_row) == 4:
+                            for j in range(0, 5):
+                                if max_row * 5 + j not in cur_row:
+                                    valid_placements.append(((j+2) % 5, (j+1) % 5))
+                                    valid_placements.append(((j+3) % 5, (j+2) % 5))
+                        if len(cur_row) == 3:
+                            for j in range(0, 5):
+                                if max_row * 5 + j not in cur_col:
+                                    if max_row*5 + ((j+1)%5) not in cur_row:
+                                        valid_placements.append(((j+3) % 5, (j+2) % 5))
+                                    if max_row * 5 + ((j+4)%5) not in cur_row:
+                                        valid_placements.append(((j+2) % 5, (j+1) % 5))
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] + 5 * max_row)
+                            self.add_char(e1, ((placement[0] + 1) % 5) + 5 * max_row)
+                            self.add_char(d2, placement[1] + 5 * max_row)
+                            # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+                elif d2 == e1:
+                    for i in range(len(rows)):
+                        max_row = rows[-1-i][0]
+                        cur_row = list([s for s in self.avbl if s // 5 == max_row])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_row) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+1) % 5))
+                        if len(cur_row) == 4:
+                            if 5*max_row not in cur_row:  # first in row
+                                valid_placements.append((1, 2))
+                                valid_placements.append((2, 3))
+                            if 5*max_row + 1 not in cur_row:  # Second in row
+                                valid_placements.append((2, 3))
+                                valid_placements.append((3, 4))
+                            if 5*max_row + 2 not in cur_row:  # third in row
+                                valid_placements.append((3, 4))
+                                valid_placements.append((4, 0))
+                            if 5*max_row + 3 not in cur_row:  # fourth in col
+                                valid_placements.append((4, 0))
+                                valid_placements.append((0, 1))
+                            if 5*max_row + 4 not in cur_row:  # fifth in col
+                                valid_placements.append((0, 1))
+                                valid_placements.append((1, 2))
+                        if len(cur_row) == 3:
+                            if 5*max_row not in cur_row:  # first in col
+                                if 5*max_row + 1 not in cur_row:
+                                    valid_placements.append((2, 3))
+                                elif 5*max_row + 4 not in cur_row:
+                                    valid_placements.append((1, 2))
+                            if 5*max_row + 1 not in cur_row:  # Second in col
+                                if 5*max_row not in cur_row:
+                                    valid_placements.append((2, 3))
+                                if 5*max_row + 2 not in cur_row:
+                                    valid_placements.append((3, 4))
+                            if 5*max_row + 2 not in cur_row:  # third in col
+                                if 5*max_row + 3 not in cur_row:
+                                    valid_placements.append((4, 0))
+                                if 5*max_row + 1 not in cur_row:
+                                    valid_placements.append((3, 4))
+                            if 5*max_row + 3 not in cur_row:  # fourth in col
+                                if 5*max_row + 2 not in cur_row:
+                                    valid_placements.append((4, 0))
+                                if 5*max_row + 4 not in cur_row:
+                                    valid_placements.append((0, 1))
+                            if 5*max_row + 4 not in cur_row:  # fifth in col
+                                if 5*max_row + 3 not in cur_row:
+                                    valid_placements.append((0, 1))
+                                if 5*max_row not in cur_row:
+                                    valid_placements.append((1, 2))
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] + 5 * max_row)
+                            # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                            self.add_char(d2, placement[1] + 5 * max_row)
+                            self.add_char(e2, ((placement[1] + 1) % 5) + 5 * max_row)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+            else:
+                if d1 in self.used:
+                    d1_idx = self.used[d1] // 5
+                    d1_idx_in_row = self.used[d1] % 5
+                    cur_row = list([s for s in self.avbl if s // 5 == d1_idx])
+                    valid_placements = []
+                    if len(cur_row) == 4:
+                        for i in range(0, 5):
+                            if d1_idx_in_row == i:
+                                valid_placements.append((i, (i+2) % 5))
+                                valid_placements.append((i, (i+3) % 5))
+                    elif len(cur_row) == 3:
+                        for i in range(0,5):
+                            if d1_idx_in_row == i:
+                                if d1_idx * 5 + ((i + 2)%5) not in cur_row:
+                                    valid_placements.append((i, (i+3) % 5))
+                                if d1_idx*5 + ((i + 4)%5) not in cur_row:
+                                    valid_placements.append((i, (i+2) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        # self.add_char(d1, placement[0] * 5 + d1_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) + 5 * d1_idx)
+                        self.add_char(d2, placement[1] + 5 * d1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) + 5 * d1_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif d2 in self.used:
+                    d2_idx = self.used[d2] // 5
+                    d2_idx_in_row = self.used[d2] % 5
+                    cur_row = list([s for s in self.avbl if s // 5 == d2_idx])
+                    valid_placements = []
+                    if len(cur_row) == 4:
+                        for i in range(0, 5):
+                            if d2_idx_in_row == i:
+                                valid_placements.append(((i+2) % 5, i))
+                                valid_placements.append(((i+3) % 5, i))
+                    elif len(cur_row) == 3:
+                        for i in range(0,5):
+                            if d2_idx_in_row == i:
+                                if d2_idx*5 + ((i + 2)%5) not in cur_row:
+                                    valid_placements.append(((i+3) % 5, i))
+                                if d2_idx*5 + ((i + 4)%5) not in cur_row:
+                                    valid_placements.append(((i+2) % 5, i))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] + 5 * d2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) + 5 * d2_idx)
+                        # self.add_char(d2, placement[1] * 5 + d2_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) + 5 * d2_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e1 in self.used:
+                    e1_idx = self.used[e1] // 5
+                    e1_idx_in_row = self.used[e1] % 5
+                    cur_row = list([s for s in self.avbl if s // 5 == e1_idx])
+                    valid_placements = []
+                    if len(cur_row) == 4:
+                        for i in range(0, 5):
+                            if e1_idx_in_row == i:
+                                valid_placements.append(((i+4) % 5, (i+1) % 5))
+                                valid_placements.append(((i+4) % 5, (i+2) % 5))
+                    elif len(cur_row) == 3:
+                        for i in range(0,5):
+                            if e1_idx_in_row == i:
+                                if e1_idx*5 + ((i + 1)%5) not in cur_row:
+                                    valid_placements.append(((i+4) % 5, (i+2) % 5))
+                                if e1_idx*5 + ((i + 3)%5) not in cur_row:
+                                    valid_placements.append(((i+4) % 5, (i+1) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] + 5 * e1_idx)
+                        # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + e1_idx)
+                        self.add_char(d2, placement[1] + 5 * e1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) + 5 * e1_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e2 in self.used:
+                    e2_idx = self.used[e2] // 5
+                    e2_idx_in_row = self.used[e2] % 5
+                    cur_row = list([s for s in self.avbl if s // 5 == e2_idx])
+                    valid_placements = []
+                    if len(cur_row) == 4:
+                        for i in range(0, 5):
+                            if e2_idx_in_row == i:
+                                valid_placements.append(((i+1) % 5, (i+4) % 5))
+                                valid_placements.append(((i+2) % 5, (i+4) % 5))
+                    elif len(cur_row) == 3:
+                        for i in range(0,5):
+                            if e2_idx_in_row == i:
+                                if e2_idx*5 + ((i + 1)%5) not in cur_row:
+                                    valid_placements.append(((i+2) % 5, (i+4) % 5))
+                                if e2_idx*5 + ((i + 3)%5) not in cur_row:
+                                    valid_placements.append(((i+1) % 5, (i+4) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] + 5 * e2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) + 5 * e2_idx)
+                        self.add_char(d2, placement[1] + 5 * e2_idx)
+                        # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e2_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+        if len(avbl_chars) == 2:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == e1:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d1 in self.used:
+                        if (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                            if (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                self.add_char(d2, (self.used[d1] + 4)%5 + 5 * (self.used[d1] // 5))
+                                self.add_char(e1, (self.used[d1] + 1) % 5+ 5 * (self.used[d1] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
+                    if d2 in self.used:
+                        if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                            if (self.used[d2] + 2) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                self.add_char(d1, (self.used[d2]+1) % 5 + 5 * (self.used[d2] // 5))
+                                self.add_char(e1, (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e1 in self.used:
+                        if (self.used[e1] + 3)% 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                            if (self.used[e1] + 4) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                                self.add_char(d1, (self.used[e1]+4) % 5 + 5 * (self.used[e1] // 5))
+                                self.add_char(d2, (self.used[e1]+3) % 5 + 5 * (self.used[e1] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                if d2 == e1:
+                    if d2 in self.used:
+                        if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5)in self.avbl:
+                            if (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                self.add_char(d1, (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5))
+                                self.add_char(e2, (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
+                    if d1 in self.used:
+                        if (self.used[d1] + 1)% 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                            if (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                self.add_char(d2, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
+                                self.add_char(e2, (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5))
+                                self.txt_idx += 2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e2 in self.used:
+                        if (self.used[e2] + 3) % 5 + 5 * (self.used[e2] // 5) in self.avbl:
+                            if (self.used[e2] + 4) % 5 + 5 * (self.used[e2] // 5) in self.avbl:
+                                self.add_char(d2, (self.used[e2] + 4) % 5 + 5 * (self.used[e2] // 5))
+                                self.add_char(d1, (self.used[e2]+ 3) % 5 + 5 * (self.used[e2] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+            else:
+                if d1 in self.used:
+                    if e1 in self.used:
+                        if self.used[e1] == (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                if (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e2, (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                            if (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                if (self.used[d1]+ 4) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e2, (self.used[d1]+4) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if d2 in self.used:
+                        if self.used[d2] == (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5)in self.avbl:
+                                if (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(e2, (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[d2] == (self.used[d1] + 3) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                if (self.used[d1]+4) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(e2, (self.used[d1]+4) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[d1] + 3) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                if (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+2) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e2] == (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                if (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+3) % 5 + 5 * (self.used[d1] // 5))
+                                    self.add_char(e1, (self.used[d1]+1) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                elif d2 in self.used:
+                    if e1 in self.used:
+                        if self.used[e1] == (self.used[d2] + 3) % 5 + 5 * (self.used[d2] // 5):
+                            if (self.used[d2]+1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                if (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5))
+                                    self.add_char(e2, (self.used[d2]+1) % 5 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e1] == (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5):
+                            if (self.used[d2]+1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                if (self.used[d2]+3) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+3) % 25 + 5 * (self.used[d2] // 5))
+                                    self.add_char(e2, (self.used[d2]+1) % 25 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
+                            if (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                if (self.used[d2]+3) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+2) % 5 + 5 * (self.used[d2] // 5))
+                                    self.add_char(e1, (self.used[d2]+3) % 5 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                            if (self.used[d2]+3) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                if (self.used[d2]+4) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+3) % 5 + 5 * (self.used[d2] // 5))
+                                    self.add_char(e1, (self.used[d2]+4) % 25 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                elif e1 in self.used:
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[e1] + 2) % 5 + 5 * (self.used[e1] // 5):
+                            if (self.used[e1]+1) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                                if (self.used[e1]+4) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[e1]+4) % 5 + 5 * (self.used[e1] // 5))
+                                    self.add_char(d2, (self.used[e1]+1) % 5 + 5 * (self.used[e1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e2] == (self.used[e1] + 3) % 5 + 5 * (self.used[e1] // 5):
+                            if (self.used[e1]+ 2) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                                if (self.used[e1]+ 4) % 5 + 5 * (self.used[e1] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[e1]+4) % 5 + 5 * (self.used[e1] // 5))
+                                    self.add_char(d2, (self.used[e1]+2) % 5 + 5 * (self.used[e1] // 5))
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+        if len(avbl_chars) == 1:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == d2:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d1 in self.used:
+                        if d2 in self.used:
+                            if self.used[d2] == (self.used[d1]+4)%5 + 5 * (self.used[d1] // 5):
+                                if (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(e1, (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                        if e1 in self.used:
+                            if self.used[e1] == (self.used[d1]+1)%5 + 5 * (self.used[d1] // 5):
+                                if (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                    self.add_char(d2, (self.used[d1] + 4) % 5 + 5 * (self.used[d1] // 5))
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                    if e1 in self.used and d2 in self.used:
+                        if self.used[e1] == (self.used[d2] + 2) % 5 + 5 * (self.used[d2] // 5):
+                            if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                self.add_char(d1, (self.used[d2] + 1)%5 + 5 * (self.used[d2] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+                if d2 == e1:
+                    if d2 in self.used:
+                        if d1 in self.used:
+                            if self.used[d1] == (self.used[d2]+4)%5 + 5 * (self.used[d2] // 5):
+                                if (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(e2, (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                        if e2 in self.used:
+                            if self.used[e2] == (self.used[d2]+1)%5 + 5 * (self.used[d2] // 5):
+                                if (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                    self.add_char(d1, (self.used[d2] + 4) % 5 + 5 * (self.used[d2] // 5))
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                    if e2 in self.used and d1 in self.used:
+                        if self.used[e2] == (self.used[d1] + 2) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                self.add_char(d2, (self.used[d1] + 1)%5 + 5 * (self.used[d1] // 5))
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+            else:
+                if d1 in self.used:
+                    if d2 in self.used:
+                        if self.used[d2] // 5 == self.used[d1] // 5:
+                            if e1 in self.used:
+                                if self.used[e1] == (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5):
+                                    if (self.used[d2]+1) % 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                        self.add_char(e2,(self.used[d2]+1)%5 + 5 * (self.used[d1] // 5))
+                                        self.txt_idx +=2
+                                        return GOOD_SQR_REWARD
+                                return -1231243124
+                            elif e2 in self.used:
+                                if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
+                                    if (self.used[d1]+1) % 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                        self.add_char(e1,(self.used[d1]+1)%5 + 5 * (self.used[d2] // 5))
+                                        self.txt_idx +=2
+                                        return GOOD_SQR_REWARD
+                                return -1231243124
+                    elif self.used[e2] // 5 == self.used[d1] // 5:
+                        if self.used[e1] == (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5):
+                            if (self.used[e2]+ 4)% 5 + 5 * (self.used[d1] // 5) in self.avbl:
+                                self.add_char(d2,(self.used[e2]+ 4)% 5 + 5 * (self.used[d1] // 5))
+                                self.txt_idx += 2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+                if d2 in self.used:
+                    if self.used[e1] // 5 == self.used[d2] // 5:
+                        if self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5):
+                            if (self.used[e1]+4)% 5 + 5 * (self.used[d2] // 5) in self.avbl:
+                                self.add_char(d1,(self.used[e1]+4)%5 + 5 * (self.used[d2] // 5))
+                                self.txt_idx += 2
+                                return GOOD_SQR_REWARD
+                    return -1231243124
+        if len(avbl_chars) == 0:
+            we_good = True
+            we_good &= self.used[d1] // 5 == self.used[d2] // 5
+            we_good &= self.used[e1] == (self.used[d1] + 1) % 5 + 5 * (self.used[d1] // 5)
+            we_good &= self.used[e2] == (self.used[d2] + 1) % 5 + 5 * (self.used[d2] // 5)
+            if we_good:
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        return -1231243124
         print("row")
 
     def action_column(self):
@@ -83,7 +572,504 @@ class KeyState:
         Returns:
             Reward for the action
         """
-        print("column")
+        avbl_chars = self.check_avbl()
+        d1 = self.decp_txt[self.txt_idx]
+        d2 = self.decp_txt[self.txt_idx+1]
+        e1 = self.encp_txt[self.txt_idx]
+        e2 = self.encp_txt[self.txt_idx+1]
+        # if not avbl_chars:
+        #     print("all chars used")
+        #     return -12242134
+        cols = enumerate(self.avbl_col)
+        if len(avbl_chars) == 4:
+            # in this case columns are only usisble if they have > 3 open spots
+            cols = list([c for c in cols if c[1] > 3])
+            cols.sort(key=lambda tup: tup[1])
+            for i in range(len(cols)):
+                max_col = cols[-1-i][0]
+                cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                valid_placements = []
+                # check what spot (if any) is being used in max col, then
+                # randomize where we place things
+                if len(cur_col) == 5:
+                    for idx in range(0, 5):
+                        valid_placements.append((idx, (idx+2) % 5))
+                        valid_placements.append((idx, (idx+3) % 5))
+                else:
+                    for j in range(0, 5):
+                        if max_col + (j*5) not in cur_col:
+                            valid_placements.append(((j+1)%5, (j+3)%5))
+                            valid_placements.append(((j+3)%5, (j+1)%5))
+                placement = random.choice(valid_placements)
+                self.add_char(d1, placement[0] * 5 + max_col)
+                self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                self.add_char(d2, placement[1] * 5 + max_col)
+                self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        if len(avbl_chars) == 3:
+            cols = list([c for c in cols if c[1] > 2])
+            cols.sort(key=lambda tup: tup[1])
+            if len(set([d1, d2, e1, e2])) == 3:
+                # e1 cant possibly equal e2 and d1 cant equal d2 because of how
+                #   the cipher works
+                if d1 == e1:
+                    return -123412341
+                elif d2 == e2:
+                    return -123412341
+                elif d1 == e2:
+                    for i in range(len(cols)):
+                        max_col = cols[-1-i][0]
+                        cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_col) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+4) % 5))
+                        if len(cur_col) == 4:
+                            for j in range(0, 5):
+                                if max_col + (j*5) not in cur_col:
+                                    valid_placements.append(((j+2) % 5, (j+1) % 5))
+                                    valid_placements.append(((j+3) % 5, (j+2) % 5))
+                        if len(cur_col) == 3:
+                            for j in range(0, 5):
+                                if max_col + (j*5) not in cur_col:
+                                    if max_col + (((j+1)%5)*5) not in cur_col:
+                                        valid_placements.append(((j+3) % 5, (j+2) % 5))
+                                    if max_col + (((j+4)%5)*5) not in cur_col:
+                                        valid_placements.append(((j+2) % 5, (j+1) % 5))
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] * 5 + max_col)
+                            self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                            self.add_char(d2, placement[1] * 5 + max_col)
+                            # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+                elif d2 == e1:
+                    for i in range(len(cols)):
+                        max_col = cols[-1-i][0]
+                        cur_col = list([s for s in self.avbl if s % 5 == max_col])
+                        valid_placements = []
+                        # check what spot (if any) is being used in max col, then
+                        # randomize where we place things
+                        if len(cur_col) == 5:
+                            for idx in range(0, 5):
+                                valid_placements.append((idx, (idx+1) % 5))
+                        if len(cur_col) == 4:
+                            if max_col not in cur_col:  # first in col
+                                valid_placements.append((1, 2))
+                                valid_placements.append((2, 3))
+                            if max_col + 5 not in cur_col:  # Second in col
+                                valid_placements.append((2, 3))
+                                valid_placements.append((3, 4))
+                            if max_col + 10 not in cur_col:  # third in col
+                                valid_placements.append((3, 4))
+                                valid_placements.append((4, 0))
+                            if max_col + 15 not in cur_col:  # fourth in col
+                                valid_placements.append((4, 0))
+                                valid_placements.append((0, 1))
+                            if max_col + 20 not in cur_col:  # fifth in col
+                                valid_placements.append((0, 1))
+                                valid_placements.append((1, 2))
+                        if len(cur_col) == 3:
+                            if max_col not in cur_col:  # first in col
+                                if max_col + 5 not in cur_col:
+                                    valid_placements.append((2, 3))
+                                elif max_col + 20 not in cur_col:
+                                    valid_placements.append((1, 2))
+                            if max_col + 5 not in cur_col:  # Second in col
+                                if max_col not in cur_col:
+                                    valid_placements.append((2, 3))
+                                if max_col + 10 not in cur_col:
+                                    valid_placements.append((3, 4))
+                            if max_col + 10 not in cur_col:  # third in col
+                                if max_col + 15 not in cur_col:
+                                    valid_placements.append((4, 0))
+                                if max_col + 5 not in cur_col:
+                                    valid_placements.append((3, 4))
+                            if max_col + 15 not in cur_col:  # fourth in col
+                                if max_col + 10 not in cur_col:
+                                    valid_placements.append((4, 0))
+                                if max_col + 20 not in cur_col:
+                                    valid_placements.append((0, 1))
+                            if max_col + 20 not in cur_col:  # fifth in col
+                                if max_col + 15 not in cur_col:
+                                    valid_placements.append((0, 1))
+                                if max_col not in cur_col:
+                                    valid_placements.append((1, 2))
+                        if valid_placements != []:
+                            placement = random.choice(valid_placements)
+                            self.add_char(d1, placement[0] * 5 + max_col)
+                            # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + max_col)
+                            self.add_char(d2, placement[1] * 5 + max_col)
+                            self.add_char(e2, ((placement[1] + 1) % 5) * 5 + max_col)
+                            self.txt_idx += 2
+                            return GOOD_SQR_REWARD
+            else:
+                if d1 in self.used:
+                    d1_idx = self.used[d1] % 5
+                    d1_idx_in_col = self.used[d1] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == d1_idx])
+                    valid_placements = []
+                    if len(cur_col) == 4:
+                        for i in range(0, 5):
+                            if d1_idx_in_col == i:
+                                valid_placements.append((i, (i+2) % 5))
+                                valid_placements.append((i, (i+3) % 5))
+                    elif len(cur_col) == 3:
+                        for i in range(0,5):
+                            if d1_idx_in_col == i:
+                                if ((i + 2)%5)*5 not in cur_col:
+                                    valid_placements.append((i, (i+3) % 5))
+                                if ((i + 4)%5)*5 not in cur_col:
+                                    valid_placements.append((i, (i+2) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        # self.add_char(d1, placement[0] * 5 + d1_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + d1_idx)
+                        self.add_char(d2, placement[1] * 5 + d1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + d1_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif d2 in self.used:
+                    d2_idx = self.used[d2] % 5
+                    d2_idx_in_col = self.used[d2] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == d2_idx])
+                    valid_placements = []
+                    if len(cur_col) == 4:
+                        for i in range(0, 5):
+                            if d2_idx_in_col == i:
+                                valid_placements.append(((i+2) % 5, i))
+                                valid_placements.append(((i+3) % 5, i))
+                    elif len(cur_col) == 3:
+                        for i in range(0,5):
+                            if d2_idx_in_col == i:
+                                if ((i + 2)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+3) % 5, i))
+                                if ((i + 4)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+2) % 5, i))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + d2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + d2_idx)
+                        # self.add_char(d2, placement[1] * 5 + d2_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + d2_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e1 in self.used:
+                    e1_idx = self.used[e1] % 5
+                    e1_idx_in_col = self.used[e1] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == e1_idx])
+                    valid_placements = []
+                    if len(cur_col) == 4:
+                        for i in range(0, 5):
+                            if e1_idx_in_col == i:
+                                valid_placements.append(((i+4) % 5, (i+1) % 5))
+                                valid_placements.append(((i+4) % 5, (i+2) % 5))
+                    elif len(cur_col) == 3:
+                        for i in range(0,5):
+                            if e1_idx_in_col == i:
+                                if ((i + 1)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+4) % 5, (i+2) % 5))
+                                if ((i + 3)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+4) % 5, (i+1) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + e1_idx)
+                        # self.add_char(e1, ((placement[0] + 1) % 5) * 5 + e1_idx)
+                        self.add_char(d2, placement[1] * 5 + e1_idx)
+                        self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e1_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+                elif e2 in self.used:
+                    e2_idx = self.used[e2] % 5
+                    e2_idx_in_col = self.used[e2] // 5
+                    cur_col = list([s for s in self.avbl if s % 5 == e2_idx])
+                    valid_placements = []
+                    print(cur_col)
+                    if len(cur_col) == 4:
+                        for i in range(0, 5):
+                            if e2_idx_in_col == i:
+                                valid_placements.append(((i+1) % 5, (i+4) % 5))
+                                valid_placements.append(((i+2) % 5, (i+4) % 5))
+                    elif len(cur_col) == 3:
+                        for i in range(0,5):
+                            if e2_idx_in_col == i:
+                                if ((i + 1)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+2) % 5, (i+4) % 5))
+                                if ((i + 3)%5)*5 not in cur_col:
+                                    valid_placements.append(((i+1) % 5, (i+4) % 5))
+                    if valid_placements != []:
+                        placement = random.choice(valid_placements)
+                        self.add_char(d1, placement[0] * 5 + e2_idx)
+                        self.add_char(e1, ((placement[0] + 1) % 5) * 5 + e2_idx)
+                        self.add_char(d2, placement[1] * 5 + e2_idx)
+                        # self.add_char(e2, ((placement[1] + 1) % 5) * 5 + e2_idx)
+                        self.txt_idx += 2
+                        return GOOD_SQR_REWARD
+        if len(avbl_chars) == 2:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == e1:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d1 in self.used:
+                        if (self.used[d1] + 5) % 25 in self.avbl:
+                            if (self.used[d1] + 20) % 25 in self.avbl:
+                                self.add_char(d2, (self.used[d1] + 20) % 25)
+                                self.add_char(e1, (self.used[d1] + 5) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
+                    if d2 in self.used:
+                        if (self.used[d2] + 5)%25 in self.avbl:
+                            if (self.used[d2] + 10)%25 in self.avbl:
+                                self.add_char(d1, (self.used[d2]+5) % 25)
+                                self.add_char(e1, (self.used[d2]+10) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e1 in self.used:
+                        if (self.used[e1] + 15)%25 in self.avbl:
+                            if (self.used[e1] + 20)%25 in self.avbl:
+                                self.add_char(d1, (self.used[e1]+20) % 25)
+                                self.add_char(d2, (self.used[e1]+15) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                if d2 == e1:
+                    if d2 in self.used:
+                        if (self.used[d2] + 5) % 25 in self.avbl:
+                            if (self.used[d2] + 20) % 25 in self.avbl:
+                                self.add_char(d1, (self.used[d2] + 20) % 25)
+                                self.add_char(e2, (self.used[d2] + 5) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1012432341
+                    if d1 in self.used:
+                        if (self.used[d1] + 5)%25 in self.avbl:
+                            if (self.used[d1] + 10)%25 in self.avbl:
+                                self.add_char(d2, (self.used[d1]+5) % 25)
+                                self.add_char(e2, (self.used[d1]+10) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+                    elif e2 in self.used:
+                        if (self.used[e2] + 15)%25 in self.avbl:
+                            if (self.used[e2] + 20)%25 in self.avbl:
+                                self.add_char(d2, (self.used[e2]+20) % 25)
+                                self.add_char(d1, (self.used[e2]+15) % 25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                            return -1012432341
+                        return -1012432341
+            else:
+                if d1 in self.used:
+                    if e1 in self.used:
+                        if self.used[e1] == (self.used[d1] + 5) % 25:
+                            if (self.used[d1]+10) % 25 in self.avbl:
+                                if (self.used[d1]+15) % 25 in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+10) % 25)
+                                    self.add_char(e2, (self.used[d1]+15) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                            if (self.used[d1]+15) % 25 in self.avbl:
+                                if (self.used[d1]+20) % 25 in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+15) % 25)
+                                    self.add_char(e2, (self.used[d1]+20) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if d2 in self.used:
+                        if self.used[d2] == (self.used[d1] + 10) % 25:
+                            if (self.used[d1]+5) % 25 in self.avbl:
+                                if (self.used[d1]+15) % 25 in self.avbl:
+                                    self.add_char(e2, (self.used[d1]+15) % 25)
+                                    self.add_char(e1, (self.used[d1]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[d2] == (self.used[d1] + 15) % 25:
+                            if (self.used[d1]+5) % 25 in self.avbl:
+                                if (self.used[d1]+20) % 25 in self.avbl:
+                                    self.add_char(e2, (self.used[d1]+20) % 25)
+                                    self.add_char(e1, (self.used[d1]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[d1] + 15) % 25:
+                            if (self.used[d1]+5) % 25 in self.avbl:
+                                if (self.used[d1]+10) % 25 in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+10) % 25)
+                                    self.add_char(e1, (self.used[d1]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e2] == (self.used[d1] + 20) % 25:
+                            if (self.used[d1]+5) % 25 in self.avbl:
+                                if (self.used[d1]+15) % 25 in self.avbl:
+                                    self.add_char(d2, (self.used[d1]+15) % 25)
+                                    self.add_char(e1, (self.used[d1]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                elif d2 in self.used:
+                    if e1 in self.used:
+                        if self.used[e1] == (self.used[d2] + 15) % 25:
+                            if (self.used[d2]+5) % 25 in self.avbl:
+                                if (self.used[d2]+10) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+10) % 25)
+                                    self.add_char(e2, (self.used[d2]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e1] == (self.used[d2] + 20) % 25:
+                            if (self.used[d2]+5) % 25 in self.avbl:
+                                if (self.used[d2]+15) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+15) % 25)
+                                    self.add_char(e2, (self.used[d2]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[d2] + 5) % 25:
+                            if (self.used[d2]+10) % 25 in self.avbl:
+                                if (self.used[d2]+15) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+10) % 25)
+                                    self.add_char(e1, (self.used[d2]+15) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                            if (self.used[d2]+15) % 25 in self.avbl:
+                                if (self.used[d2]+20) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[d2]+15) % 25)
+                                    self.add_char(e1, (self.used[d2]+20) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+                elif e1 in self.used:
+                    if e2 in self.used:
+                        if self.used[e2] == (self.used[e1] + 10) % 25:
+                            if (self.used[e1]+5) % 25 in self.avbl:
+                                if (self.used[e1]+20) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[e1]+20) % 25)
+                                    self.add_char(d2, (self.used[e1]+5) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        if self.used[e2] == (self.used[e1] + 15) % 25:
+                            if (self.used[e1]+10) % 25 in self.avbl:
+                                if (self.used[e1]+20) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[e1]+20) % 25)
+                                    self.add_char(d2, (self.used[e1]+10) % 25)
+                                    self.txt_idx += 2
+                                    return GOOD_SQR_REWARD
+                        return -1231243124
+        if len(avbl_chars) == 1:
+            if len(set([d1, d2, e1, e2])) == 3:
+                if d1 == d2:
+                    return -12342134123
+                if e2 == d2:
+                    return -1234123
+                if d1 == e2:
+                    if d1 in self.used:
+                        if d2 in self.used:
+                            if self.used[d2] == (self.used[d1]+20)%25:
+                                if (self.used[d1] + 5) % 25 in self.avbl:
+                                    self.add_char(e1, (self.used[d1] + 5) % 25)
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                        if e1 in self.used:
+                            if self.used[e1] == (self.used[d1]+5)%25:
+                                if (self.used[d1] + 20) % 25 in self.avbl:
+                                    self.add_char(d2, (self.used[d1] + 20) % 25)
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                    if e1 in self.used and d2 in self.used:
+                        if self.used[e1] == (self.used[d2] + 10) % 25:
+                            if (self.used[d2] + 5) % 25 in self.avbl:
+                                self.add_char(d1, (self.used[d2] + 5)%25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+                if d2 == e1:
+                    if d2 in self.used:
+                        if d1 in self.used:
+                            if self.used[d1] == (self.used[d2]+20)%25:
+                                if (self.used[d2] + 5) % 25 in self.avbl:
+                                    self.add_char(e2, (self.used[d2] + 5) % 25)
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                        if e2 in self.used:
+                            if self.used[e2] == (self.used[d2]+5)%25:
+                                if (self.used[d2] + 20) % 25 in self.avbl:
+                                    self.add_char(d1, (self.used[d2] + 20) % 25)
+                                    self.txt_idx +=2
+                                    return GOOD_SQR_REWARD
+                            return -1231243124
+                    if e2 in self.used and d1 in self.used:
+                        if self.used[e2] == (self.used[d1] + 10) % 25:
+                            if (self.used[d1] + 5) % 25 in self.avbl:
+                                self.add_char(d2, (self.used[d1] + 5)%25)
+                                self.txt_idx +=2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+            else:
+                if d1 in self.used:
+                    if d2 in self.used:
+                        if self.used[d2] % 5 == self.used[d1] % 5:
+                            if e1 in self.used:
+                                if self.used[e1] == (self.used[d1] + 5) % 25:
+                                    if (self.used[d2]+5) % 25 in self.avbl:
+                                        self.add_char(e2,(self.used[d2]+5)%25)
+                                        self.txt_idx +=2
+                                        return GOOD_SQR_REWARD
+                                return -1231243124
+                            elif e2 in self.used:
+                                if self.used[e2] == (self.used[d2] + 5) % 25:
+                                    if (self.used[d1]+5) % 25 in self.avbl:
+                                        self.add_char(e1,(self.used[d1]+5)%25)
+                                        self.txt_idx +=2
+                                        return GOOD_SQR_REWARD
+                                return -1231243124
+                    elif self.used[e2] % 5 == self.used[d1] % 5:
+                        if self.used[e1] == (self.used[d1] + 5) % 25:
+                            if (self.used[e2]+20)%25 in self.avbl:
+                                self.add_char(d2,(self.used[e2]+20)%25)
+                                self.txt_idx += 2
+                                return GOOD_SQR_REWARD
+                        return -1231243124
+                if d2 in self.used:
+                    if self.used[e1] % 5 == self.used[d2] % 5:
+                        if self.used[e2] == (self.used[d2] + 5) % 25:
+                            if (self.used[e1]+20)%25 in self.avbl:
+                                self.add_char(d1,(self.used[e1]+20)%25)
+                                self.txt_idx += 2
+                                return GOOD_SQR_REWARD
+                    return -1231243124
+        if len(avbl_chars) == 0:
+            we_good = True
+            we_good &= self.used[d1] % 5 == self.used[d2] % 5
+            we_good &= self.used[e1] == (self.used[d1] + 5) % 25
+            we_good &= self.used[e2] == (self.used[d2] + 5) % 25
+            if we_good:
+                self.txt_idx += 2
+                return GOOD_SQR_REWARD
+        return -1231243124
+
+
+
+
+
+
+
+
+
 
 # The following function is kind of ridiculous, but it works and would've been
 #   difficult to implement in a different manner
@@ -99,11 +1085,9 @@ class KeyState:
         d2 = self.decp_txt[self.txt_idx+1]
         e1 = self.encp_txt[self.txt_idx]
         e2 = self.encp_txt[self.txt_idx+1]
-        print(d1)
-        print(d2)
-        if not avbl_chars:
-            print("all chars used")
-            return -12242134
+        # if not avbl_chars:
+        #     print("all chars used")
+        #     return -12242134
         rows = enumerate(self.avbl_row)
         rows = list([r for r in rows if r[1] > 1])
         rows.sort(key=lambda tup: tup[1])
@@ -265,8 +1249,8 @@ class KeyState:
                     return
                 if self.avbl_row[row_used2]==0 or self.avbl_col[col_used2]==0:
                     return
-                if col_used1 == col_used2:
-                    return
+                if col_used1 == col_used2: 
+                    return 
                 if row_used1 == row_used2:
                     return
                 max_row1 = row_used1

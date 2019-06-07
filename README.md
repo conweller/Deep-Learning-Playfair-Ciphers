@@ -71,7 +71,7 @@ had to simplify the way the key was built. Even this simplified version of the
 actions required over a thousand lines of code. After testing our code, we
 concluded that our neural network preforms slightly better than an agent
 choosing random actions. When our agent chose actions according to our neural
-network it was able to successfully place 8.062 characters in each key it
+network it was able to successfully place 8.3015 characters in each key it
 attempted to generate. When it chose actions randomly, it was only able to
 place about 7.383 characters per key.
 

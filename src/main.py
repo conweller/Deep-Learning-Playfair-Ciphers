@@ -8,7 +8,7 @@ import keyenv
 
 # =========================== READ IN TRAING DATA ============================
 # Default datafile
-DATA_FILE = '../data/melville-moby_dick.txt'
+DATA_FILE = 'data/melville-moby_dick.txt'
 # Size of each chunk of training data, must be even
 SUBSET_SZ = 100
 
@@ -17,7 +17,7 @@ SUBSET_SZ = 100
 TRAINING = []
 
 # SERIALIZE_NAME: serialized training data
-SERIALIZE_NAME = 'training.pickle'
+SERIALIZE_NAME = 'data/training.pickle'
 
 # If serialized file exists, use that, otherwise read in the training data
 #   from the DATA_FILE and serialize the result

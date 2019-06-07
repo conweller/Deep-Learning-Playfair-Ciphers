@@ -13,7 +13,7 @@ and cipher text.
 ## How to use
 Run with the command:
 ```
-python3 main.py
+python3 src/main.py
 ```
 
 ## Project Structure:

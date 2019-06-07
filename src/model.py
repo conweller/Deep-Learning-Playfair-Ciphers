@@ -18,14 +18,15 @@ class NNet():
         # self.regul_const = regul_const
         self.learning_rate = learning_rate
         self.input_dim = input_dim
-        self.output_dim = input_dim
+        self.output_dim = output_dim
         self.hidden_layers = hidden_layers
         self.model = self.build_model()
 
 
     def build_model(self):
         """
-        Builds the keras model
+        Builds the keras model with correct number of: hidden layers, output dimension, and input dimensions.
+        Returns: The Keras model
         """
         model = Sequential()
         model.add(Dense(24, input_dim=self.input_dim, activation='relu'))
@@ -33,7 +34,7 @@ class NNet():
         for _ in range(0,self.hidden_layers):
             model.add(
                 Dense(
-                    self.output_dim,
+                    24,
                     use_bias=False,
                     activation='relu',
                     # kernel_regularizer=keras.regularizers.l2(

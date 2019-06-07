@@ -97,6 +97,6 @@ would improve.
 [Tutorials/Examples](https://www.tensorflow.org/tutorials/)
 
 #### How to build your own AlphaZero AI using Python and Keras by David Foster
-[Article] (https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
+[Article](https://medium.com/applied-data-science/how-to-build-your-own-alphazero-ai-using-python-and-keras-7f664945c188)
 
 [GitHub Repo](https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning)

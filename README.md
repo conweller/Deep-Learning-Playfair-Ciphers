@@ -1,7 +1,6 @@
 # Deep Learning Playfair Ciphers
-
 **Authors:** Connor Onweller and Christopher Outhwaite
-----
+
 Deep learning approach to generating keys for Playfair Ciphers given plain text
 and cipher text.
 

@@ -2,46 +2,46 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.models import Sequential, load_model, Model
 from keras.layers import Input, Dense, Conv2D, Flatten, BatchNormalization, Activation, LeakyReLU, add
+from keras.optimizers import Adam
 
-ACTION_SIZE
+ACTION_SIZE = 3
 
-class Model():
+
+class NNet():
     """
     The network being created.
     Attributes:
     TODO
     """
-    def __init__(self, regul_const, learning_rate, input_dim, output_dim, hidden_layers):
-        self.regul_const = regul_const
+
+    def __init__(self, learning_rate, input_dim, output_dim, hidden_layers):
+        # self.regul_const = regul_const
         self.learning_rate = learning_rate
         self.input_dim = input_dim
+        self.output_dim = input_dim
         self.hidden_layers = hidden_layers
         self.model = self.build_model()
-    
-    def make_hidden_layers(self, inp, filters, kernal_size):
-        x = Dense(
-            self.output_dim,
-            use_bias=False,
-            activation='relu',
-            kernel_regularizer = regularizers.l2(self.regul_const)       
-            )(x)
 
-    def build_model():
-        main_input = Input(shape = self.input_dim, name = 'main_input')
+
+    def build_model(self):
+        """
+        Builds the keras model
+        """
         model = Sequential()
+        model.add(Dense(24, input_dim=self.input_dim, activation='relu'))
 
-        # potentially add convo layer...
-
-        if len(self.hidden_layers) > 1:
-            for i in self.hidden_layers[1:]:
-                model.add(Dense(self.output_dim, use_bias=False, activation='relu', kernel_regularizer = regularizers.l2(self.regul_const)))
-            
-        
-        #policy head value head????
-
+        for _ in range(0,self.hidden_layers):
+            model.add(
+                Dense(
+                    self.output_dim,
+                    use_bias=False,
+                    activation='relu',
+                    # kernel_regularizer=keras.regularizers.l2(
+                        # self.regul_const)
+                )
+            )
         model.add(Dense(ACTION_SIZE, activation='linear'))
-
-        model.compile(model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate)))
-
-
-
+        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        # model.compile(model.compile(
+        #     loss='mse', optimizer=Adam(lr=self.learning_rate)))
+        return model

@@ -52,10 +52,10 @@ AGENT = agent.OurAgent(INPUT_DIM, OUTPUT_DIM)
 DONE = False
 sum = 0
 for idx in range(EPISODES):
-    # KEN: Key environment, i.e. the current state of the key being built
+    # ken: Key environment, i.e. the current state of the key being built
     ken = keyenv.KeyState(TRAINING[idx][0], TRAINING[idx][1])
     # ken = keyenv.KeyState(TRAINING[0][0], TRAINING[0][1])
-    # STATE:
+    # state: array represntation of the current in progress key, cipher text, and decipher text
     state = np.reshape(ken.get_state(), (1, INPUT_DIM))
     while ken.txt_idx < SUBSET_SZ:
         action = AGENT.act(state)

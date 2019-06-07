@@ -4,9 +4,9 @@ import random
 SUCCESS = True
 FAILURE = False
 SUBSET_SZ = 100
-GOOD_REWARD = 100000
+GOOD_REWARD = 1000
 BAD_REWARD = -20
-LIVING_REWARD = -1
+LIVING_REWARD = 10
 
 
 class KeyState:
@@ -1459,4 +1459,4 @@ class KeyState:
             if self.txt_idx == SUBSET_SZ:
                 return self.get_state(), GOOD_REWARD, True
             return self.get_state(), LIVING_REWARD, False
-        return self.get_state(), self.txt_idx, True
+        return self.get_state(), BAD_REWARD, True

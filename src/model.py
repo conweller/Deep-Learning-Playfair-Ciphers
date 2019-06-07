@@ -41,7 +41,7 @@ class NNet():
                 )
             )
         model.add(Dense(ACTION_SIZE, activation='linear'))
-        model.compile(optimizer='adam', loss=tf.keras.losses.mse, metrics=['accuracy'])
-        # model.compile(model.compile(
-        #     loss='mse', optimizer=Adam(lr=self.learning_rate)))
+        #  model.compile(optimizer='adam', loss=tf.keras.losses.mse, metrics=['accuracy'])
+        model.compile(
+             loss='mse', optimizer=Adam(lr=self.learning_rate))
         return model

@@ -7,7 +7,7 @@ KEY = cipher.generate_key()
 TEXT =       "abefghijk"
 CIPHERTEXT = "cdlenopqr"
 
-KS = keyenv.KeyState(TEXT, CIPHERTEXT, KEY)
+KS = keyenv.KeyState(TEXT, CIPHERTEXT)
 KS.add_char("c", 11)
 # KS.add_char("b", 13)
 KS.add_char("d", 14)

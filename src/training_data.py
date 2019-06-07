@@ -2,7 +2,6 @@
 from string import ascii_lowercase
 from cipher import encipher_text, decipher_text, generate_key
 
-
 def generate_data(filename, subset_sz):
     """
     Creates list of training data tuples (each containing deciphered text,

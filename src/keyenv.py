@@ -4,9 +4,9 @@ import random
 SUCCESS = True
 FAILURE = False
 SUBSET_SZ = 100
-GOOD_REWARD = 100
+GOOD_REWARD = 1000
 BAD_REWARD = -20
-LIVING_REWARD = -1
+LIVING_REWARD = 10
 
 
 class KeyState:
@@ -52,6 +52,8 @@ class KeyState:
         for char in self.used:
             key[self.used[char]] = char
         result = result + key
+        for i, char in enumerate(result):
+            result[i] = ord(char)
         return result
 
 
@@ -1457,32 +1459,4 @@ class KeyState:
             if self.txt_idx == SUBSET_SZ:
                 return self.get_state(), GOOD_REWARD, True
             return self.get_state(), LIVING_REWARD, False
-        return self.get_state(), self.txt_idx, True
-
-
-    # HYPERPAREMET SECTION
-
-    # MODEL
-    state_size = [50, 50]       # 50 plaintext pairs and 50 ciphertext pairs
-    # There is three actions (currently) column, row, and square add
-    action_size = 3
-    learning_rate = .002        # Alpha
-
-    # TRAINING
-    # I just picked a big number, I dont know how many we want to do
-    total_episodes = 1000
-
-    # EXPLORATION
-    # alright all these variable names are kind of self explanatory
-    explore_start = 1.0
-    explore_stop = 0.01
-    decay_right = 0.0001
-
-    # Q Learning hyper parameters
-    gamma = 0.95
-
-    # Memory HyperParemeters
-    memory_size = 1000000
-
-    # Training?
-    training = True
+        return self.get_state(), BAD_REWARD, True

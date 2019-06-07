@@ -5,7 +5,7 @@ import tensorflow as tf
 import model
 
 # REGUL_CONST = 0.5
-HIDDEN_LAYERS = 5
+HIDDEN_LAYERS = 7
 
 class OurAgent:
     def __init__(self, input_dim, output_dim):

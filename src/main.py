@@ -43,7 +43,7 @@ INPUT_DIM = 29
 OUTPUT_DIM = 3
 
 # BATCH_SIZE: The number size of memory looked at during training
-BATCH_SIZE = 32768
+BATCH_SIZE = 32
 
 # AGENT: The agent taking actions to build a key
 AGENT = agent.OurAgent(INPUT_DIM, OUTPUT_DIM)
@@ -52,10 +52,10 @@ AGENT = agent.OurAgent(INPUT_DIM, OUTPUT_DIM)
 DONE = False
 sum = 0
 for idx in range(EPISODES):
-    # KEN: Key environment, i.e. the current state of the key being built
+    # ken: Key environment, i.e. the current state of the key being built
     ken = keyenv.KeyState(TRAINING[idx][0], TRAINING[idx][1])
     # ken = keyenv.KeyState(TRAINING[0][0], TRAINING[0][1])
-    # STATE:
+    # state: array represntation of the current in progress key, cipher text, and decipher text
     state = np.reshape(ken.get_state(), (1, INPUT_DIM))
     while ken.txt_idx < SUBSET_SZ:
         action = AGENT.act(state)
@@ -66,8 +66,8 @@ for idx in range(EPISODES):
         if done:
             sum += ken.txt_idx
             AGENT.target_nnet.model.set_weights(AGENT.nnet.model.get_weights())
-            if idx % 1000 == 0 and idx > 0:
-                print("Average = " + str(sum/1000))
+            if idx % 100 == 0 and idx > 0:
+                print("Average = " + str(sum/100))
                 sum = 0
             # print("Key:")
             # ken.print_key()

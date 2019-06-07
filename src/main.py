@@ -32,7 +32,7 @@ except IOError:
 
 # =========================== TRAIN OUR SYSTEM ================================
 # EPISODES: The number of times we train the agent
-EPISODES = 9000
+EPISODES = 2000
 
 # INPUT_DIM: The input data dimensions for our neural net
 #   25 spaces in the key, and 4 letters of input text = 29
@@ -64,14 +64,15 @@ for idx in range(EPISODES):
         AGENT.store_state(state, action, reward, next_state, done)
         state = next_state
         if done:
-            sum += ken.txt_idx
+            sum += len(ken.used)
             AGENT.target_nnet.model.set_weights(AGENT.nnet.model.get_weights())
-            if idx % 100 == 0 and idx > 0:
-                print("Average = " + str(sum/100))
-                sum = 0
+            
+                
+                
             # print("Key:")
             # ken.print_key()
             # print("episode {} \n Key:\n{}".format(idx, ken.get_key()))
             break
         if len(AGENT.memory) > BATCH_SIZE:
             AGENT.train(BATCH_SIZE)
+print("Average = " + str(sum/EPISODES))

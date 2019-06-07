@@ -101,10 +101,10 @@ class KeyState:
 
     def action_row(self):
         """
-        Makes a row action
+        Makes a row action: adds the cipher text plain text pair to a single row.
 
         Returns:
-            Reward for the given action
+            Boolean stating if the function could succesfully place a new item in the key or not.
         """
         avbl_chars = self.check_avbl()
         d1 = self.decp_txt[self.txt_idx]
@@ -599,10 +599,10 @@ class KeyState:
 
     def action_column(self):
         """
-        Makes a column action
+        Makes a column action: adds the plain text cipher text in a single column
 
         Returns:
-            Reward for the action
+            Boolean stating whether the action was able to be completed or not
         """
         avbl_chars = self.check_avbl()
         d1 = self.decp_txt[self.txt_idx]
@@ -1094,23 +1094,13 @@ class KeyState:
                 return SUCCESS
         return FAILURE
 
-
-
-
-
-
-
-
-
-
-# The following function is kind of ridiculous, but it works and would've been
-#   difficult to implement in a different manner
     def action_square(self):
         """
-        Makes a square action
+        Makes a square action: That is it puts the characters into the array in such a way that the encyphered chars and decyphers chars are diagnol, 
+        and all four form a square.
 
         Returns:
-            Reward for the given action
+            Boolean stating whether the action was completed or not.
         """
         avbl_chars = self.check_avbl()
         d1 = self.decp_txt[self.txt_idx]
